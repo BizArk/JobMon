@@ -15,8 +15,8 @@ app.use(bodyParser.json());
 
 app.use(morgan('dev'));
 
-//var agentRouter = require('./Routing/agentRoutes.js')(Agent);
-//app.use('/api/agents', agentsRouter);
+var agentRouter = require('./Routing/agentRoutes.js')(jmdb);
+app.use('/api/agents', agentRouter);
 
 var jobRouter = require('./Routing/jobRoutes.js')(jmdb);
 app.use('/api/jobs', jobRouter);

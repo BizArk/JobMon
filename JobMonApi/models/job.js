@@ -2,7 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var jobSchema = new Schema({
-    displayName: String,
+    displayName: { 
+        type: String,
+        require: true
+    },
     description: String,
     status: {
         type: String,
@@ -17,7 +20,7 @@ var jobSchema = new Schema({
     version: Number, // This value should be incremented when the zip file is updated.
     numberOfInstances: { // The maximum number of instances that we will keep. Oldest instance and associated log files will be deleted as new instances are created.
         type: Number,
-        min: 0
+        min: 1
     },
     schedule: { // The schedule used to run the job.
         minutes: { // Interval (ex, every 5 minutes)
