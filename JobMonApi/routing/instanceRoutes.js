@@ -1,10 +1,10 @@
 var express = require('express');
 var routingUtil = require('./routingUtil.js');
 
-function instanceRoutes(instance) {
+function instanceRoutes(jmdb) {
 
     function createInstance(req, res) {
-        var instance = new instance(req.body);
+        var instance = new jmdb.Instance(req.body);
         instance.save();
         
         res.status(201).json(instance);
@@ -13,7 +13,7 @@ function instanceRoutes(instance) {
     function deleteInstance(req, res) {
         var instance = req.data;
 
-        instance.remove(function(err) {
+        jmdb.Instance.remove(function(err) {
             if(err)
                 return res.status(500).send(err);
             else
@@ -27,7 +27,7 @@ function instanceRoutes(instance) {
     }
 
     function getInstances(req, res) {
-        instance.find(function(err, instances){
+        jmdb.Instance.find(function(err, instances){
             if(err) 
                 res.status(500).send(err);
             else {
@@ -57,7 +57,7 @@ function instanceRoutes(instance) {
             }
         }
         instance.save();
-        return res.status(200).json(instance);
+        return res.status(200).json(instance);        
     }
 
     function updateInstance(req, res) {
@@ -76,7 +76,7 @@ function instanceRoutes(instance) {
 
     var router = express.Router();
 
-    router.use('/:instanceID', routingUtil.findDocByID(instance, 'instanceID', 'Unable to find instance.'));
+    router.use('/:instanceID', routingUtil.findDocByID(jmdb.Instance, 'instanceID', 'Unable to find instance.'));
 
     router.route('/')
         .get(getInstances)

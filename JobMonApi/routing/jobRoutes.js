@@ -1,10 +1,10 @@
 var express = require('express');
 var routingUtil = require('./routingUtil.js');
 
-function jobRoutes(Job) {
+function jobRoutes(jmdb) {
 
     function createJob(req, res) {
-        var job = new Job(req.body);
+        var job = new jmdb.Job(req.body);
         job.save();
         
         res.status(201).json(job);
@@ -27,7 +27,7 @@ function jobRoutes(Job) {
     }
 
     function getJobs(req, res) {
-        Job.find(function(err, jobs){
+        jmdb.Job.find(function(err, jobs){
             if(err) 
                 res.status(500).send(err);
             else {
@@ -76,7 +76,7 @@ function jobRoutes(Job) {
 
     var router = express.Router();
 
-    router.use('/:jobID', routingUtil.findDocByID(Job, 'jobID', 'Unable to find job.'));
+    router.use('/:jobID', routingUtil.findDocByID(jmdb.Job, 'jobID', 'Unable to find job.'));
 
     router.route('/')
         .get(getJobs)
