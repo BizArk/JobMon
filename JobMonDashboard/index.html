@@ -11,50 +11,86 @@
 
     <script>
         var app = angular.module('main', [])
-        app.controller('jobsController', ['$scope', function JobsController($scope) {
-            console.log("In it to win it")
-            $scope.jobList = [
-                {
-                    jobId: "something",
-                    displayName: "First Job",
-                    description: "This is my first job ever",
-                    instanceCount: 3,
-                    status: "Error",
-                    minLogLevel: "Whatever",
-                    summary: ""
+        app.controller('jobsController', ['$scope', '$http', function JobsController($scope, $http) {
+
+            function getJobs() {
+
+                $http.get('/api/jobs/').then(function success(response) {
+
+                    for (var i = 0; i< response.data.length; i++) {
+
+                        //temp stub until we get the instances.
+                        response.data[i].instanceCount = 0;
+                    }
+                    $scope.jobList = response.data;
+
+                    console.log($scope.jobList);
+                    getInstances();
                 },
-                { displayName: "Best Job", description: "This is my best job ever", instanceCount: 2, status: "Disabled" },
-                { displayName: "Worst Job", description: "This is the worst job ever", instanceCount: 0, status: "Enabled" }
-            ]
-            console.log($scope.jobList);
+                function error(response) {
+                    alert(response.data);
+                });
+            }
+
+            function getInstances() {
+                $http.get('/api/instances/').then(function success(response) {
+                    $scope.jobInstances = response.data;
+                    console.log("got instances");
+                    console.log(response.data);
+                },
+                function error(response) {
+                    alert(response.data);
+                });
+            }
+
+            getJobs();
+
+
         }]);
         $(document).ready(function () {
-            //    var app = angular.module('mainlkj', []);
+
         });
 
 
     </script>
     <style type="text/css">
         .jobCard {
+            background-color:cyan;
             position: relative;
-            padding: 10px;
-            margin: 10px;
-            display: inline-block;
-            height: 200px;
+            padding:0px;
+            margin: 0px;
+            display: block;
+            height: 110px;
             border: solid black 1px;
             border-radius: 5px;
-            width: 400px;
+        }
+        .jobTitle {
+            border-bottom:solid black 1px;
+            padding:3px;
+            background-color:lightblue;
+            border-top-left-radius:5px;
+            border-top-right-radius:5px;
+            text-transform:uppercase;
+
         }
 
-            .jobCard .Error {
-                background-color: red;
-            }
+       .jobCard .Error {
+            background-color: red;
+        }
 
         .jobCount {
             padding: 3px;
             position: absolute;
             display: inline;
             right: 0px;
+            z-index:10;
+        }
+
+        @media screen and (min-width: 400px) {
+            .jobCard {
+                display: inline-block !important;
+                width: 180px;
+            }
         }
 
         body {
@@ -67,13 +103,12 @@
 
     <div ng-controller="jobsController">
         <div ng-repeat="job in jobList" class="jobCard">
-            <div class="jobCount">{{job.instanceCount}}</div>
+            <div class="jobCount">Count:{{job.instanceCount}}</div>
             <div class="jobTitle">{{ job.displayName}}</div>
             <div class="jobStatus" ng-class="job.status">{{ job.status}}</div>
             <div class="jobDescription">{{ job.description}}</div>
 
         </div>
     </div>
-
 </body>
 </html>
