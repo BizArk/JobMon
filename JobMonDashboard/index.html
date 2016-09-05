@@ -4,69 +4,76 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>My Example</title>
-    <!-- Bootstrap 4 alpha CSS -->
-    <!-- IMPORTANT: Don't use this .css file in production. Use Bootstrap 3 until Bootstrap 4 is released. -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/css/bootstrap.min.css" integrity="sha384-MIwDKRSSImVFAZCVLtU0LMDdON6KVCrZHyVQQj6e8wIEJkW4tvwqXrbMIya1vriY" crossorigin="anonymous">
+    <title>JobMon</title>
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
+    <script>
+        var app = angular.module('main', [])
+        app.controller('jobsController', ['$scope', function JobsController($scope) {
+            console.log("In it to win it")
+            $scope.jobList = [
+                {
+                    jobId: "something",
+                    displayName: "First Job",
+                    description: "This is my first job ever",
+                    instanceCount: 3,
+                    status: "Error",
+                    minLogLevel: "Whatever",
+                    summary: ""
+                },
+                { displayName: "Best Job", description: "This is my best job ever", instanceCount: 2, status: "Disabled" },
+                { displayName: "Worst Job", description: "This is the worst job ever", instanceCount: 0, status: "Enabled" }
+            ]
+            console.log($scope.jobList);
+        }]);
+        $(document).ready(function () {
+            //    var app = angular.module('mainlkj', []);
+        });
+
+
+    </script>
     <style type="text/css">
-        body {
-            padding-top: 1em;
+        .jobCard {
+            position: relative;
+            padding: 10px;
+            margin: 10px;
+            display: inline-block;
+            height: 200px;
+            border: solid black 1px;
+            border-radius: 5px;
+            width: 400px;
         }
 
-        .card { 
-            max-width:450px;
+            .jobCard .Error {
+                background-color: red;
+            }
+
+        .jobCount {
+            padding: 3px;
+            position: absolute;
+            display: inline;
+            right: 0px;
+        }
+
+        body {
+            padding-top: 1em;
         }
     </style>
 
 </head>
-<body>
-    <div class="container-fluid">
+<body ng-app="main">
 
-        <div class="card-columns">
-
-
-            <!-- Card 4 -->
-            <div class="card">
-                <div class="card-header" style="background-color:green;color:white">YouTube Updates</div>
-                <div class="card-block" >
-                    <p class="card-text">
-                    Job ran Sunday (date/time). 
-                    <br />
-                        currently running 3 out of 4 instance(s)
-                        Max instances
-                        (X) errors in (x) minutes/hours/seconds...
-
-                    </p>
-                    <p class="card-text"></p>
-
-
-                </div>
-               <!-- <div class="card-footer"></div>-->
-            </div>
-
+    <div ng-controller="jobsController">
+        <div ng-repeat="job in jobList" class="jobCard">
+            <div class="jobCount">{{job.instanceCount}}</div>
+            <div class="jobTitle">{{ job.displayName}}</div>
+            <div class="jobStatus" ng-class="job.status">{{ job.status}}</div>
+            <div class="jobDescription">{{ job.description}}</div>
 
         </div>
     </div>
 
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>
-    <!-- Tether -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
-    <!-- Bootstrap 4 Alpha JS -->
-    <!-- IMPORTANT: Don't use this .js file in production. Use Bootstrap 3 until Bootstrap 4 is released. -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/js/bootstrap.min.js" integrity="sha384-ux8v3A6CPtOTqOzMKiuo3d/DomGaaClxFYdCu2HPMBEkf6x2xiDyJ7gkXU0MWwaD" crossorigin="anonymous"></script>
-    <!-- Initialize Bootstrap functionality -->
-    <script>
-// Initialize tooltip component
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
-
-// Initialize popover component
-$(function () {
-  $('[data-toggle="popover"]').popover()
-})
-    </script>
 </body>
 </html>
