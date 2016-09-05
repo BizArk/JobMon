@@ -15,7 +15,21 @@ module.exports = (function(){
         }
     }
 
+    function saveResponse(res, successStatus, successReturn) {
+        function saveCallback(err) {
+            if(err) {
+                console.log(err);
+                res.status(400).json(err);
+            } else {
+                res.status(successStatus).json(successReturn);
+            }
+        }
+
+        return saveCallback;
+    }
+
     return {
-        findDocByID: findDocByID
+        findDocByID: findDocByID,
+        saveResponse: saveResponse
     }
 })();

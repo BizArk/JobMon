@@ -15,6 +15,9 @@ app.use(bodyParser.json());
 
 app.use(morgan('dev'));
 
+var adminRouter = require('./Routing/adminRoutes.js')(jmdb);
+app.use('/api/admin', adminRouter);
+
 var agentRouter = require('./Routing/agentRoutes.js')(jmdb);
 app.use('/api/agents', agentRouter);
 
@@ -23,7 +26,9 @@ app.use('/api/jobs', jobRouter);
 
 var instanceRouter = require('./Routing/instanceRoutes.js')(jmdb);
 app.use('/api/instances', instanceRouter);
+
 app.use(express.static('..\\JobmonDashboard'));
+
 app.listen(port, function() {
     console.log ('Running on PORT ' + port);
 })

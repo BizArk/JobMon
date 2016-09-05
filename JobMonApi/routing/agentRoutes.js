@@ -5,21 +5,12 @@ function agentRoutes(jmdb) {
 
     function createAgent(req, res) {
         var agent = new jmdb.Agent(req.body);
-        agent.save();
-        
-        res.status(201).json(agent);
+        agent.save(routingUtil.saveResponse(res, 201, agent));
     }
 
     function deleteAgent(req, res) {
         var agent = req.data;
-
-        agent.remove(function(err) {
-            if(err)
-                return res.status(500).send(err);
-            else
-                return res.status(204).send('Removed');
-        });
-
+        agent.remove(routingUtil.saveResponse(res, 204));
     }
 
     function getAgent(req, res) {
@@ -56,8 +47,7 @@ function agentRoutes(jmdb) {
                     break;
             }
         }
-        agent.save();
-        return res.status(200).json(agent);
+        agent.save(routingUtil.saveResponse(res, 200, agent));
     }
 
     function updateAgent(req, res) {
@@ -68,9 +58,7 @@ function agentRoutes(jmdb) {
         agent.hostDetails = req.body.hostDetails;
         agent.enabled = req.body.enabled;
         agent.lastCheckin = req.body.lastCheckin;
-        agent.save();
-        
-        res.status(200).json(agent);
+        agent.save(routingUtil.saveResponse(res, 200, agent));
     }
 
     var router = express.Router();
