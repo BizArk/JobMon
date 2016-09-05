@@ -25,7 +25,7 @@ app.use('/api/jobs', jobRouter);
 var Instance = require('./models/instance.js')
 var instanceRouter = require('./Routing/instanceRoutes.js')(Instance);
 app.use('/api/instances', instanceRouter);
-
+app.use(express.static('..\\JobmonDashboard'));
 app.listen(port, function() {
     console.log ('Running on PORT ' + port);
 })
