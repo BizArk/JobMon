@@ -27,8 +27,8 @@ app.use('/api/jobs', jobRouter);
 var instanceRouter = require('./Routing/instanceRoutes.js')(jmdb);
 app.use('/api/instances', instanceRouter);
 
-app.use(express.static('..\\JobmonDashboard'));
+app.use(express.static(cfg.dashboardPath));
 
 app.listen(port, function() {
     console.log ('Running on PORT ' + port);
-})
+});
