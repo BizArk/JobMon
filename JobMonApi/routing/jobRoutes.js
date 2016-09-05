@@ -5,21 +5,12 @@ function jobRoutes(jmdb) {
 
     function createJob(req, res) {
         var job = new jmdb.Job(req.body);
-        job.save();
-        
-        res.status(201).json(job);
+        job.save(routingUtil.saveResponse(res, 201, job));
     }
 
     function deleteJob(req, res) {
         var job = req.data;
-
-        job.remove(function(err) {
-            if(err)
-                return res.status(500).send(err);
-            else
-                return res.status(204).send('Removed');
-        });
-
+        job.remove(routingUtil.saveResponse(res, 204));
     }
 
     function getJob(req, res) {
@@ -56,8 +47,7 @@ function jobRoutes(jmdb) {
                     break;
             }
         }
-        job.save();
-        return res.status(200).json(job);
+        job.save(routingUtil.saveResponse(res, 200, job));
     }
 
     function updateJob(req, res) {
@@ -69,9 +59,7 @@ function jobRoutes(jmdb) {
         job.minLogLevel = req.body.minLogLevel;
         job.installPath = req.body.installPath;
         job.version = req.body.version;
-        job.save();
-        
-        res.status(200).json(job);
+        job.save(routingUtil.saveResponse(res, 200, job));
     }
 
     var router = express.Router();

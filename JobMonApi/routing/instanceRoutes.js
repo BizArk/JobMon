@@ -5,21 +5,12 @@ function instanceRoutes(jmdb) {
 
     function createInstance(req, res) {
         var instance = new jmdb.Instance(req.body);
-        instance.save();
-        
-        res.status(201).json(instance);
+        instance.save(routingUtil.saveResponse(res, 201, instance));
     }
 
     function deleteInstance(req, res) {
         var instance = req.data;
-
-        jmdb.Instance.remove(function(err) {
-            if(err)
-                return res.status(500).send(err);
-            else
-                return res.status(204).send('Removed');
-        });
-
+        jmdb.Instance.remove(routingUtil.saveResponse(res, 204));
     }
 
     function getInstance(req, res) {
@@ -56,8 +47,7 @@ function instanceRoutes(jmdb) {
                     break;
             }
         }
-        instance.save();
-        return res.status(200).json(instance);        
+        instance.save(routingUtil.saveResponse(res, 200, instance));   
     }
 
     function updateInstance(req, res) {
@@ -69,9 +59,7 @@ function instanceRoutes(jmdb) {
         instance.minLogLevel = req.body.minLogLevel;
         instance.installPath = req.body.installPath;
         instance.version = req.body.version;
-        instance.save();
-        
-        res.status(200).json(instance);
+        instance.save(routingUtil.saveResponse(res, 200, instance));
     }
 
     var router = express.Router();
