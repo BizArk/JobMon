@@ -3,11 +3,6 @@ var routingUtil = require('./routingUtil.js');
 
 function jobRoutes(jmdb) {
 
-    function createJob(req, res) {
-        var job = new jmdb.Job(req.body);
-        job.save(routingUtil.saveResponse(res, 201, job));
-    }
-
     function deleteJob(req, res) {
         var job = req.data;
         job.remove(routingUtil.saveResponse(res, 204));
@@ -18,12 +13,13 @@ function jobRoutes(jmdb) {
     }
 
     function getJobs(req, res) {
-        jmdb.Job.find(function(err, jobs){
-            if(err) 
-                res.status(500).send(err);
-            else {
-                var returnedJobs = [];                
-                jobs.forEach(function(job) {
+        jmdb.Job.find(function (err, jobs) {
+            if (err) {
+                err = routingUtil.toStandardErr(err);
+                res.status(400).json(err);
+            } else {
+                var returnedJobs = [];
+                jobs.forEach(function (job) {
                     var retJob = job.toJSON();
                     retJob.links = {
                         self: `http://${req.headers.host}/api/jobs/${retJob._id}`
@@ -37,8 +33,8 @@ function jobRoutes(jmdb) {
 
     function patchJob(req, res) {
         var job = req.data;
-        for(var key in req.body) {
-            switch(key) {
+        for (var key in req.body) {
+            switch (key) {
                 case '_id':
                     // Ignore.
                     break;
@@ -48,6 +44,11 @@ function jobRoutes(jmdb) {
             }
         }
         job.save(routingUtil.saveResponse(res, 200, job));
+    }
+
+    function registerJob(req, res) {
+        var job = new jmdb.Job(req.body);
+        job.save(routingUtil.saveResponse(res, 201, job));
     }
 
     function updateJob(req, res) {
@@ -68,7 +69,7 @@ function jobRoutes(jmdb) {
 
     router.route('/')
         .get(getJobs)
-        .post(createJob);
+        .post(registerJob);
 
     router.route('/:jobID')
         .delete(deleteJob)
