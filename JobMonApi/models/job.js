@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 var jobSchema = new Schema({
     displayName: { 
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     description: String,
     status: {

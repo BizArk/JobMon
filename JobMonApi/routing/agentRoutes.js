@@ -3,11 +3,6 @@ var routingUtil = require('./routingUtil.js');
 
 function agentRoutes(jmdb) {
 
-    function createAgent(req, res) {
-        var agent = new jmdb.Agent(req.body);
-        agent.save(routingUtil.saveResponse(res, 201, agent));
-    }
-
     function deleteAgent(req, res) {
         var agent = req.data;
         agent.remove(routingUtil.saveResponse(res, 204));
@@ -50,12 +45,42 @@ function agentRoutes(jmdb) {
         agent.save(routingUtil.saveResponse(res, 200, agent));
     }
 
+    function registerAgent(req, res) {
+        var agent = new jmdb.Agent(req.body);
+        var host_lower = (agent.host || '').toLowerCase();
+
+        // verify that this host doesn't already have a value in the database.
+        jmdb.Agent.findOne({ host_lower: host_lower }, function(err, existingAgent) {
+            if(err) { 
+                return res.status(400).json({ 
+                    message: err,
+                    name: 'QueryError'
+                 });
+            }
+            
+            if(existingAgent) {
+                existingAgent.host = req.body.host;
+                existingAgent.hostDetails = req.body.hostDetails;
+                existingAgent.url = req.body.url;
+                existingAgent.save(routingUtil.saveResponse(res, 200, agent));
+            } else {
+                // These should always be true.
+                agent.host_lower = host_lower;
+                agent.enabled = true;
+                agent.lastCheckin = null;
+                agent.save(routingUtil.saveResponse(res, 201, agent));
+            }
+        });
+    }
+
     function updateAgent(req, res) {
         var agent = req.data;
         console.log(req.body);
-        
+
         agent.host = req.body.host;
+        agent.host_lower = req.body.host.toLowerCase();
         agent.hostDetails = req.body.hostDetails;
+        agent.url = req.body.url;
         agent.enabled = req.body.enabled;
         agent.lastCheckin = req.body.lastCheckin;
         agent.save(routingUtil.saveResponse(res, 200, agent));
@@ -67,7 +92,7 @@ function agentRoutes(jmdb) {
 
     router.route('/')
         .get(getAgents)
-        .post(createAgent);
+        .post(registerAgent);
 
     router.route('/:agentID')
         .delete(deleteAgent)

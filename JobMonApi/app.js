@@ -21,3 +21,5 @@ jmrouting(app, jmdb);
 app.listen(port, function() {
     console.log ('Running on PORT ' + port);
 });
+
+module.exports = app;
