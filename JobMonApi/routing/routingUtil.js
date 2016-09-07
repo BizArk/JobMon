@@ -1,6 +1,7 @@
 module.exports = (function () {
     function findDocByID(model, paramName, missingMsg) {
         return function (req, res, next) {
+            //console.log(model.collection.name + '.findDocByID(' + req.params[paramName] + ')');
             model.findById(req.params[paramName])
                 .exec(function (err, obj) {
                     if (err) {
@@ -22,6 +23,7 @@ module.exports = (function () {
                 err = toStandardErr(err);
                 res.status(400).json(err);
             } else {
+                //console.log(arguments);
                 res.status(successStatus).json(successReturn);
             }
         }

@@ -39,3 +39,6 @@ jspm_packages
 
 # IDE settings
 .vscode
+
+# Test directories
+downloads/jobs

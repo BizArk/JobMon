@@ -17,8 +17,14 @@ var jobSchema = new Schema({
         type: String,
         enum: ['Trace', 'Debug', 'Info', 'Warn', 'Error', 'Fatal']
     },
-    installPath: String, // The path to the zip file that is accessible to the JobMon API server.
-    version: Number, // This value should be incremented when the zip file is updated.
+    fileHash: { // A hash of the file so we can know if it is the one that is installed or not. 
+        type: String,
+        required: true
+    },
+    fileLastUpdated: {
+        type: Date,
+        required: true
+    },
     numberOfInstances: { // The maximum number of instances that we will keep. Oldest instance and associated log files will be deleted as new instances are created.
         type: Number,
         min: 1

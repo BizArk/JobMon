@@ -14,4 +14,4 @@ before(function (done) {
 
 testAgents(http);
 testJobs(http);
-testInstances(http);
+//testInstances(http);

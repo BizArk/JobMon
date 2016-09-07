@@ -1,6 +1,8 @@
 var assert = require('assert');
 
 function testJobs(http) {
+    var jobs; // we are going to be using the jobs once we create them.
+
     describe('Jobs:', function () {
         describe('getting initial list of jobs', function () {
             it('should return no jobs', function (done) {
@@ -42,6 +44,7 @@ function testJobs(http) {
                     .expect(function (res) {
                         var job = res.body;
                         assert.ok(job._id);
+                        assert.ok(job.fileHash);
                     })
                     .end(done);
             });
@@ -111,10 +114,52 @@ function testJobs(http) {
                     .get('/api/jobs')
                     .expect(200)
                     .expect(function (res) {
-                        var jobs = res.body;
+                        jobs = res.body;
                         assert.equal(3, jobs.length);
                     })
                     .end(done);
+            });
+        });
+
+        describe('downloading job', function() {
+            it('should return the job', function(done) {
+                http
+                    .get(`/api/jobs/${jobs[0]._id}/download`)
+                    .expect(function(res) {
+                        console.log('downloading file...');
+                    })
+                    .end(done);
+            });
+        });
+
+        describe('installing job', function () {
+            var agents;
+
+            before(function (done) {
+                http
+                    .get('/api/agents')
+                    .expect(200)
+                    .expect(function (res) {
+                        agents = res.body;
+                    })
+                    .end(done);
+            });
+
+
+            it('with valid job ID', function (done) {
+                http
+                    .post(`/api/agents/${agents[0]._id}/jobs`)
+                    .send({ jobID: jobs[0]._id })
+                    .expect(function (res) {
+                        console.log(res.body);
+                    })
+                    .expect(201)
+                    .end(done);
+            });
+
+            it('has been installed with version', function(done) {
+                console.log('version: ' + job.version);
+                done();
             });
         });
     });
