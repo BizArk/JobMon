@@ -17,14 +17,8 @@ var jobSchema = new Schema({
         type: String,
         enum: ['Trace', 'Debug', 'Info', 'Warn', 'Error', 'Fatal']
     },
-    fileHash: { // A hash of the file so we can know if it is the one that is installed or not. 
-        type: String,
-        required: true
-    },
-    fileLastUpdated: {
-        type: Date,
-        required: true
-    },
+    fileHash: String, // A hash of the file so we can know if it is the one that is installed or not. 
+    fileLastUpdated: Date, // The last time the file was uploaded.
     numberOfInstances: { // The maximum number of instances that we will keep. Oldest instance and associated log files will be deleted as new instances are created.
         type: Number,
         min: 1

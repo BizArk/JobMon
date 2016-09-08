@@ -10,7 +10,8 @@
     "gulp-nodemon": "^2.1.0",
     "mkdirp": "^0.5.1",
     "mongoose": "^4.5.9",
-    "morgan": "^1.7.0"
+    "morgan": "^1.7.0",
+    "multer": "^1.2.0"
   },
   "devDependencies": {
     "mocha": "^3.0.2",

@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 app.use(express.static(cfg.dashboardPath));
-app.use('downloads', express.static(cfg.downloadPath));
+app.use('/downloads', express.static(cfg.downloadPath));
 
 jmrouting(app, jmdb);
 

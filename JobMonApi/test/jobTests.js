@@ -1,7 +1,19 @@
 var assert = require('assert');
 
+function binaryParser(res, callback) {
+    res.setEncoding('binary');
+    res.data = '';
+    res.on('data', function (chunk) {
+        res.data += chunk;
+    });
+    res.on('end', function () {
+        callback(null, new Buffer(res.data, 'binary'));
+    });
+}
+
 function testJobs(http) {
     var jobs; // we are going to be using the jobs once we create them.
+    var lastJob; // Used to perform additional operations on the last job we were working on.
 
     describe('Jobs:', function () {
         describe('getting initial list of jobs', function () {
@@ -42,11 +54,34 @@ function testJobs(http) {
                     })
                     .expect(201)
                     .expect(function (res) {
-                        var job = res.body;
+                        var job = lastJob = res.body;
                         assert.ok(job._id);
-                        assert.ok(job.fileHash);
                     })
                     .end(done);
+            });
+
+            it('and upload file', function (done) {
+                http
+                    .post(`/api/jobs/${lastJob._id}/upload`)
+                    .attach('job', '.\\test\\testjob.zip')
+                    .expect(201)
+                    .end(done);
+            });
+
+            it('and file exists', function (done) {
+                http
+                    .get(`/downloads/jobs/${lastJob._id}.zip`)
+                    .expect(200)
+                    .parse(binaryParser)
+                    .end(function(err, res) {
+                        if(err)
+                            return done(err);
+                        
+                        assert.equal('application/zip', res.headers['content-type']);
+                        assert.ok(Buffer.isBuffer(res.body));
+                        console.log(res.body);
+                        done();
+                    });
             });
 
             it('with duplicate information', function (done) {
@@ -82,7 +117,7 @@ function testJobs(http) {
                     })
                     .expect(201)
                     .expect(function (res) {
-                        var job = res.body;
+                        var job = lastJob = res.body;
                         assert.ok(job._id);
                     })
                     .end(done);
@@ -101,7 +136,7 @@ function testJobs(http) {
                     })
                     .expect(201)
                     .expect(function (res) {
-                        var job = res.body;
+                        var job = lastJob = res.body;
                         assert.ok(job._id);
                     })
                     .end(done);
@@ -121,12 +156,12 @@ function testJobs(http) {
             });
         });
 
-        describe('downloading job', function() {
-            it('should return the job', function(done) {
+        describe('downloading job', function () {
+            it('should return the job', function (done) {
                 http
                     .get(`/api/jobs/${jobs[0]._id}/download`)
-                    .expect(function(res) {
-                        console.log('downloading file...');
+                    .expect(function (res) {
+                        console.log(res.body);
                     })
                     .end(done);
             });
@@ -157,7 +192,7 @@ function testJobs(http) {
                     .end(done);
             });
 
-            it('has been installed with version', function(done) {
+            it('has been installed with version', function (done) {
                 console.log('version: ' + job.version);
                 done();
             });

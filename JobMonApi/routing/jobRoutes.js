@@ -3,6 +3,7 @@ var express = require('express');
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
+var multer = require('multer');
 
 var cfg = require('../config.js');
 var routingUtil = require('./routingUtil.js');
@@ -94,9 +95,13 @@ function jobRoutes(jmdb) {
 
     function registerJob(req, res) {
         var job = new jmdb.Job(req.body);
+        job.save(routingUtil.saveResponse(res, 201, job));
+    }
 
-        //todo: copy install to local directory. Put the file through the hash.        
-        var srcPath = path.resolve(global.appRoot, cfg.downloadPath, 'test', 'testjob.zip');
+    function uploadJob(req, res) {
+        var job = req.data;
+
+        var srcPath = req.file.path;
         var destPath = path.resolve(global.appRoot, cfg.downloadPath, 'jobs', job._id + '.zip');
         copyFile(srcPath, destPath, true, function (err, fileHash) {
             if(err) {
@@ -110,14 +115,9 @@ function jobRoutes(jmdb) {
             job.fileHash = fileHash;
             job.fileLastUpdated = Date.now();
             job.save(routingUtil.saveResponse(res, 201, job));
-        });
 
-        // hashFile(jobPath, function (fileHash) {
-        //     job.fileHash = fileHash;
-        //     job.fileLastUpdated = Date.now();
-        //     job.save(routingUtil.saveResponse(res, 201, job));
-        // });
-        fs.cop
+            fs.unlink(srcPath);
+        });
     }
 
     function updateJob(req, res) {
@@ -134,17 +134,31 @@ function jobRoutes(jmdb) {
 
     var router = express.Router();
 
+    var parseUploads = multer({
+        dest: path.resolve(global.appRoot, cfg.uploadPath),
+        onFileUploadStart: function (file) {
+            console.log(file.originalname + ' is starting ...')
+        },
+        onFileUploadComplete: function (file) {
+            console.log(file.fieldname + ' uploaded to  ' + file.path)
+            imageUploaded=true;
+        }
+    });
+    
     router.use('/:jobID', routingUtil.findDocByID(jmdb.Job, 'jobID', 'Unable to find job.'));
 
     router.route('/')
         .get(getJobs)
-        .post(registerJob);
+        .post(registerJob, parseUploads.single('jobinstall'));
 
     router.route('/:jobID')
         .delete(deleteJob)
         .get(getJob)
         .patch(patchJob)
         .put(updateJob);
+
+    router.route('/:jobID/upload')
+        .post(parseUploads.single('job'), uploadJob);
 
     return router;
 }
