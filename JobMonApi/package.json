@@ -8,12 +8,14 @@
     "express": "^4.14.0",
     "gulp": "^3.9.1",
     "gulp-nodemon": "^2.1.0",
+    "mkdirp": "^0.5.1",
     "mongoose": "^4.5.9",
     "morgan": "^1.7.0"
   },
   "devDependencies": {
     "mocha": "^3.0.2",
     "request": "^2.74.0",
+    "rimraf": "^2.5.4",
     "supertest": "^2.0.0"
   },
   "scripts": {

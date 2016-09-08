@@ -2,6 +2,7 @@ var crypto = require('crypto');
 var express = require('express');
 var fs = require('fs');
 var path = require('path');
+var mkdirp = require('mkdirp');
 
 var cfg = require('../config.js');
 var routingUtil = require('./routingUtil.js');
@@ -14,6 +15,14 @@ function jobRoutes(jmdb) {
 
         if(shouldHash)
             hash = crypto.createHash('md5');
+
+        // Make sure the directory is created 
+        // before copying files to it.
+        var destDir = path.dirname(destPath);
+        mkdirp(destDir, function(err) {
+            if(err) 
+                console.error(err);
+        });
 
         var rd = fs.createReadStream(srcPath);
         rd.on('data', function (data) {
@@ -85,9 +94,10 @@ function jobRoutes(jmdb) {
 
     function registerJob(req, res) {
         var job = new jmdb.Job(req.body);
+
         //todo: copy install to local directory. Put the file through the hash.        
         var srcPath = path.resolve(global.appRoot, cfg.downloadPath, 'test', 'testjob.zip');
-        var destPath = path.resolve(global.appRoot, cfg.downloadPath, 'jobs', 'testjob.zip');
+        var destPath = path.resolve(global.appRoot, cfg.downloadPath, 'jobs', job._id + '.zip');
         copyFile(srcPath, destPath, true, function (err, fileHash) {
             if(err) {
                 res.status(400).json({
