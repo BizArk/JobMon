@@ -73,15 +73,62 @@ function testJobs(http) {
                     .get(`/downloads/jobs/${lastJob._id}.zip`)
                     .expect(200)
                     .parse(binaryParser)
-                    .end(function(err, res) {
-                        if(err)
+                    .end(function (err, res) {
+                        if (err)
                             return done(err);
-                        
+
                         assert.equal('application/zip', res.headers['content-type']);
                         assert.ok(Buffer.isBuffer(res.body));
-                        console.log(res.body);
                         done();
                     });
+            });
+
+            it('can be deleted', function(done) {
+                http
+                    .delete(`/api/jobs/${lastJob._id}`)
+                    .expect(204)
+                    .end(done);
+            });
+
+            it('and job is deleted', function(done) {
+                http
+                    .get(`/api/jobs/${lastJob._id}`)
+                    .expect(404)
+                    .end(done);
+            });
+
+            it('and file is removed', function(done) {
+                http
+                    .get(`/downloads/jobs/${lastJob._id}.zip`)
+                    .expect(404)
+                    .end(done);
+            });
+
+            it('with required information again', function (done) {
+                http
+                    .post('/api/jobs')
+                    .send({
+                        displayName: 'Test Job',
+                        description: 'A fake job for testing purposes.',
+                        status: 'Enabled',
+                        configuration: null,
+                        minLogLevel: 'Info',
+                        numberOfInstances: 1
+                    })
+                    .expect(201)
+                    .expect(function (res) {
+                        var job = lastJob = res.body;
+                        assert.ok(job._id);
+                    })
+                    .end(done);
+            });
+
+            it('and upload file', function (done) {
+                http
+                    .post(`/api/jobs/${lastJob._id}/upload`)
+                    .attach('job', '.\\test\\testjob.zip')
+                    .expect(201)
+                    .end(done);
             });
 
             it('with duplicate information', function (done) {

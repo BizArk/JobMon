@@ -14,14 +14,14 @@ function jobRoutes(jmdb) {
         var fnCalled = false;
         var hash;
 
-        if(shouldHash)
+        if (shouldHash)
             hash = crypto.createHash('md5');
 
         // Make sure the directory is created 
         // before copying files to it.
         var destDir = path.dirname(destPath);
-        mkdirp(destDir, function(err) {
-            if(err) 
+        mkdirp(destDir, function (err) {
+            if (err)
                 console.error(err);
         });
 
@@ -52,7 +52,12 @@ function jobRoutes(jmdb) {
 
     function deleteJob(req, res) {
         var job = req.data;
-        job.remove(routingUtil.saveResponse(res, 204));
+        var destPath = path.resolve(global.appRoot, cfg.downloadPath, 'jobs', job._id + '.zip');
+        fs.unlink(destPath, function (err) {
+            if (err)
+                return done(err);
+            job.remove(routingUtil.saveResponse(res, 204));
+        });
     }
 
     function getJob(req, res) {
@@ -104,7 +109,7 @@ function jobRoutes(jmdb) {
         var srcPath = req.file.path;
         var destPath = path.resolve(global.appRoot, cfg.downloadPath, 'jobs', job._id + '.zip');
         copyFile(srcPath, destPath, true, function (err, fileHash) {
-            if(err) {
+            if (err) {
                 res.status(400).json({
                     name: 'CopyFile',
                     message: err
@@ -141,10 +146,10 @@ function jobRoutes(jmdb) {
         },
         onFileUploadComplete: function (file) {
             console.log(file.fieldname + ' uploaded to  ' + file.path)
-            imageUploaded=true;
+            imageUploaded = true;
         }
     });
-    
+
     router.use('/:jobID', routingUtil.findDocByID(jmdb.Job, 'jobID', 'Unable to find job.'));
 
     router.route('/')
