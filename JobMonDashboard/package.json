@@ -11,5 +11,8 @@
     "services"
   ],
   "author": "Brian Yangas",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "angular": "^1.5.8"
+  }
 }
