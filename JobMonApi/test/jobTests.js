@@ -239,8 +239,8 @@ function testJobs(http) {
                     .end(done);
             });
 
-            it('has been installed with version', function (done) {
-                console.log('version: ' + job.version);
+            it('has been installed with hash', function (done) {
+                console.log('version: ' + job.fileHash);
                 done();
             });
         });

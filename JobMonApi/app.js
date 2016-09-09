@@ -3,6 +3,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var morgan = require('morgan');
 var path = require('path');
+var debug = require('debug')('jobmon.app');
 
 var cfg = require('./config.js');
 var jmdb = require('./models/_jmdb.js');
@@ -11,7 +12,7 @@ var jmrouting = require('./routing/routingSetup.js');
 // Put the root path into global scope so we can use it for the root directory
 // when creating files such as job installs and log files.
 global.appRoot = path.resolve(__dirname);
-console.log('appRoot: ' + global.appRoot);
+debug('appRoot: ' + global.appRoot);
 
 mongoose.Promise = global.Promise;
 mongoose.connect(cfg.mongoConnStr);
@@ -25,7 +26,8 @@ app.use('/downloads', express.static(cfg.downloadPath));
 
 jmrouting(app, jmdb);
 
-var port = cfg.port || 8000;
+// process.env.PORT is set by host web server (such as IIS).  
+var port = process.env.PORT || cfg.port || 8000;
 app.listen(port, function() {
     console.log ('Running on PORT ' + port);
 });

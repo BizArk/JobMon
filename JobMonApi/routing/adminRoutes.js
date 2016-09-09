@@ -1,6 +1,7 @@
 var express = require('express');
 var routingUtil = require('./routingUtil.js');
 var mongoose = require('mongoose');
+var debug = require('debug')('jobmon.route.admin')
 
 function adminRoutes(jmdb) {
 
@@ -11,11 +12,11 @@ function adminRoutes(jmdb) {
 
         Promise.all([pjob, pagent, pinstance])
             .then(function() {
-                console.log('Cleared the database');
+                debug('Cleared the database');
                 return res.status(204).send('The database has been cleared.');
             })
             .catch(function(err) {
-                console.log('Unable to clear the database.');
+                debug('Unable to clear the database.');
                 return res.status(500).send(err);
             });
     }

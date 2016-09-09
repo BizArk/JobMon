@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var nodemon = require('gulp-nodemon');
+var debug = require('debug')('jobmon.gulp')
 
 gulp.task('default', function() {
     nodemon({
@@ -7,7 +8,7 @@ gulp.task('default', function() {
         ext: 'js',
         ignore: ['./node_modules/**']
     })
-    .on('restart', function() {
-        console.log('Restarting...');
+    .on('restart', function() {        
+        debug('Restarting...');
     });
 });

@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
 var multer = require('multer');
+var debug = require('debug')('jobmon.route.job')
 
 var cfg = require('../config.js');
 var routingUtil = require('./routingUtil.js');
@@ -142,10 +143,10 @@ function jobRoutes(jmdb) {
     var parseUploads = multer({
         dest: path.resolve(global.appRoot, cfg.uploadPath),
         onFileUploadStart: function (file) {
-            console.log(file.originalname + ' is starting ...')
+            debug(file.originalname + ' is starting ...')
         },
         onFileUploadComplete: function (file) {
-            console.log(file.fieldname + ' uploaded to  ' + file.path)
+            debug(file.fieldname + ' uploaded to  ' + file.path)
             imageUploaded = true;
         }
     });

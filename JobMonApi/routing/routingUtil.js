@@ -1,7 +1,9 @@
+var debug = require('debug')('jobmon.route.util')
+
 module.exports = (function () {
     function findDocByID(model, paramName, missingMsg) {
         return function (req, res, next) {
-            //console.log(model.collection.name + '.findDocByID(' + req.params[paramName] + ')');
+            //debug(model.collection.name + '.findDocByID(' + req.params[paramName] + ')');
             model.findById(req.params[paramName])
                 .exec(function (err, obj) {
                     if (err) {
@@ -23,7 +25,7 @@ module.exports = (function () {
                 err = toStandardErr(err);
                 res.status(400).json(err);
             } else {
-                //console.log(arguments);
+                //debug(arguments);
                 res.status(successStatus).json(successReturn);
             }
         }
@@ -66,8 +68,8 @@ module.exports = (function () {
             };
         }
 
-        console.log('Unable to convert to standard error object.');
-        console.log(err);
+        debug('Unable to convert to standard error object.');
+        debug(err);
         return err;
     }
 
