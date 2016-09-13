@@ -5,52 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>JobMon</title>
-    <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+    <script src="node_modules/angular/angular.js"></script>
+    <script src="app/app.js"></script>
 
     <script>
-        var app = angular.module('main', [])
-        app.controller('jobsController', ['$scope', '$http', function JobsController($scope, $http) {
-
-            function getJobs() {
-
-                $http.get('/api/jobs/').then(function success(response) {
-
-                    for (var i = 0; i< response.data.length; i++) {
-
-                        //temp stub until we get the instances.
-                        response.data[i].instanceCount = 0;
-                    }
-                    $scope.jobList = response.data;
-
-                    console.log($scope.jobList);
-                    getInstances();
-                },
-                function error(response) {
-                    alert(response.data);
-                });
-            }
-
-            function getInstances() {
-                $http.get('/api/instances/').then(function success(response) {
-                    $scope.jobInstances = response.data;
-                    console.log("got instances");
-                    console.log(response.data);
-                },
-                function error(response) {
-                    alert(response.data);
-                });
-            }
-
-            getJobs();
-
-
-        }]);
-        $(document).ready(function () {
-
-        });
-
 
     </script>
     <style type="text/css">
