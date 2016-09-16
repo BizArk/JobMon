@@ -41,4 +41,5 @@ jspm_packages
 .vscode
 
 # Test directories
-downloads/jobs
+downloads
+uploads

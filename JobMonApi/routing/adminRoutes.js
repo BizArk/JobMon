@@ -6,11 +6,14 @@ var debug = require('debug')('jobmon.route.admin')
 function adminRoutes(jmdb) {
 
     function clearDB(req, res) {
-        var pagent = jmdb.Agent.remove().exec();
-        var pinstance = jmdb.Instance.remove().exec();
-        var pjob = jmdb.Job.remove().exec();
+        var fns = [
+            jmdb.Install.remove().exec(),
+            jmdb.Instance.remove().exec(),
+            jmdb.Agent.remove().exec(),
+            jmdb.Job.remove().exec()
+        ]
 
-        Promise.all([pjob, pagent, pinstance])
+        Promise.all(fns)
             .then(function() {
                 debug('Cleared the database');
                 return res.status(204).send('The database has been cleared.');

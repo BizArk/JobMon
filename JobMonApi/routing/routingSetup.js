@@ -3,6 +3,7 @@ function routingSetup(app, jmdb) {
     app.use('/api/agents',      require('./agentRoutes.js')(jmdb));
     app.use('/api/jobs',        require('./jobRoutes.js')(jmdb));
     app.use('/api/instances',   require('./instanceRoutes.js')(jmdb));
+    app.use('/api/installs',   require('./installRoutes.js')(jmdb));
 }
 
 module.exports = routingSetup;

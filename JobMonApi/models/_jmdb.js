@@ -3,7 +3,8 @@
 var jmdb = {
     Agent: require('./agent.js'),
     Job: require('./job.js'),
-    Instance: require('./instance.js')
+    Instance: require('./instance.js'),
+    Install: require('./install.js')
 }
 
 module.exports = jmdb;

@@ -18,15 +18,7 @@ var agentSchema = new Schema({
         required: true,
         unique: true
     },
-    enabled: Boolean, // Determines if the agent is enabled or not. 
-    jobs: [{ // The jobs that are installed using this agent.
-        jobID: {
-            type: ObjectId,
-            required: true,
-            ref: 'Jobs'
-        },
-        fileHash: String // The hash of the file that is currently installed on the agent. If null, the job has not been installed on this agent yet.
-    }]
+    enabled: Boolean // Determines if the agent is enabled or not. 
 },{
     collection: 'agents'
 });

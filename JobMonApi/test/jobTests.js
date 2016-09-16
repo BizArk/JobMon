@@ -85,7 +85,7 @@ function testJobs(http) {
 
             it('can be deleted', function(done) {
                 http
-                    .delete(`/api/jobs/${lastJob._id}`)
+                    .del(`/api/jobs/${lastJob._id}`)
                     .expect(204)
                     .end(done);
             });
@@ -211,37 +211,6 @@ function testJobs(http) {
                         console.log(res.body);
                     })
                     .end(done);
-            });
-        });
-
-        describe('installing job', function () {
-            var agents;
-
-            before(function (done) {
-                http
-                    .get('/api/agents')
-                    .expect(200)
-                    .expect(function (res) {
-                        agents = res.body;
-                    })
-                    .end(done);
-            });
-
-
-            it('with valid job ID', function (done) {
-                http
-                    .post(`/api/agents/${agents[0]._id}/jobs`)
-                    .send({ jobID: jobs[0]._id })
-                    .expect(function (res) {
-                        console.log(res.body);
-                    })
-                    .expect(201)
-                    .end(done);
-            });
-
-            it('has been installed with hash', function (done) {
-                console.log('version: ' + job.fileHash);
-                done();
             });
         });
     });

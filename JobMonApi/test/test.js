@@ -4,6 +4,7 @@ var cfg = require('../config.js');
 var http = request(app);
 var testAgents = require('./agentTests.js');
 var testJobs = require('./jobTests.js');
+var testInstalls = require('./installTests.js');
 var testInstances = require('./instanceTests.js');
 var fs = require('fs');
 var path = require('path');
@@ -26,4 +27,5 @@ before(function(done) {
 
 testAgents(http);
 testJobs(http);
+testInstalls(http);
 //testInstances(http);

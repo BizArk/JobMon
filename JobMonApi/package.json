@@ -4,6 +4,7 @@
   "description": "API for the BizArk job monitoring sytem.",
   "main": "index.js",
   "dependencies": {
+    "async": "^2.0.1",
     "body-parser": "^1.15.2",
     "debug": "^2.2.0",
     "express": "^4.14.0",
