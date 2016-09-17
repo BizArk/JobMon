@@ -1,13 +1,13 @@
 ﻿var app = angular.module('main', [])
 
-(function () {
-
-    app.controller('jobsController', ['$scope', '$http', function JobsController($scope, $http) {
+app.controller('jobsController', ['$scope', '$http', '$interval',
+    function JobsController($scope, $http, $interval) {
 
         getJobs();
+        //once a minute.
+        $interval(getJobs, 60 * 1000);
 
-
-       var getJobs = function getJobs() {
+        function getJobs() {
 
             $http.get('/api/jobs/').then(function success(response) {
 
@@ -18,7 +18,6 @@
                 }
                 $scope.jobList = response.data;
 
-                console.log($scope.jobList);
                 getInstances();
             },
             function error(response) {
@@ -26,11 +25,10 @@
             });
         }
 
-       var getInstances = function getInstances() {
+        function getInstances() {
             $http.get('/api/instances/').then(function success(response) {
                 $scope.jobInstances = response.data;
-                console.log("got instances");
-                console.log(response.data);
+ 
             },
             function error(response) {
                 alert(response.data);
@@ -38,4 +36,3 @@
         }
 
     }]);
-})()
