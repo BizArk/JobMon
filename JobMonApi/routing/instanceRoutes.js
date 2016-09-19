@@ -18,12 +18,12 @@ function instanceRoutes(jmdb) {
     }
 
     function getInstances(req, res) {
-        jmdb.Instance.find(function(err, instances){
-            if(err) 
+        jmdb.Instance.find(function (err, instances) {
+            if (err)
                 res.status(500).send(err);
             else {
-                var returnedInstances = [];                
-                instances.forEach(function(instance) {
+                var returnedInstances = [];
+                instances.forEach(function (instance) {
                     var retInstance = instance.toJSON();
                     retInstance.links = {
                         self: `http://${req.headers.host}/api/instances/${retInstance._id}`
@@ -37,8 +37,8 @@ function instanceRoutes(jmdb) {
 
     function patchInstance(req, res) {
         var instance = req.data;
-        for(var key in req.body) {
-            switch(key) {
+        for (var key in req.body) {
+            switch (key) {
                 case '_id':
                     // Ignore.
                     break;
@@ -47,7 +47,7 @@ function instanceRoutes(jmdb) {
                     break;
             }
         }
-        instance.save(routingUtil.saveResponse(res, 200, instance));   
+        instance.save(routingUtil.saveResponse(res, 200, instance));
     }
 
     function updateInstance(req, res) {

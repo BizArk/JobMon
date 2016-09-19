@@ -75,8 +75,11 @@ function jobRoutes(jmdb) {
                 jobs.forEach(function (job) {
                     var retJob = job.toJSON();
                     retJob.links = {
-                        self: `http://${req.headers.host}/api/jobs/${retJob._id}`
+                        self: `http://${req.headers.host}/api/jobs/${retJob._id}`                        
                     };
+                    if(retJob.fileHash) {
+                        retJob.links.download = `http://${req.headers.host}/downloads/jobs/${retJob._id}.zip`;
+                    }
                     returnedJobs.push(retJob);
                 });
                 res.status(200).json(returnedJobs);

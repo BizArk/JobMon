@@ -1,14 +1,15 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
+var idvalidator = require('mongoose-id-validator');
 
 var installSchema = new Schema({
-    jobID: { // The job that is installed.
+    job: { // The job that is installed.
         type: ObjectId,
         required: true,
         ref: 'job'
     },
-    agentID: { // The agent that the job is installed on.
+    agent: { // The agent that the job is installed on.
         type: ObjectId,
         required: true,
         ref: 'agent'
@@ -19,6 +20,7 @@ var installSchema = new Schema({
         collection: 'installs'
     });
 
-installSchema.index({ jobID: 1, agentID: 1 }, { unique: true });
+installSchema.index({ job: 1, agent: 1 }, { unique: true });
+installSchema.plugin(idvalidator);
 
 module.exports = mongoose.model('install', installSchema);

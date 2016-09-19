@@ -12,6 +12,7 @@
     "gulp-nodemon": "^2.1.0",
     "mkdirp": "^0.5.1",
     "mongoose": "^4.5.9",
+    "mongoose-id-validator": "^0.3.0",
     "morgan": "^1.7.0",
     "multer": "^1.2.0"
   },

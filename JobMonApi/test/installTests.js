@@ -37,8 +37,8 @@ function testInstalls(http) {
                 http
                     .post('/api/installs')
                     .send({
-                        agentID: '123',
-                        jobID: 'abc'
+                        agent: '123',
+                        job: 'abc'
                     })
                     .expect(400)
                     .expect(function (res) {
@@ -68,8 +68,8 @@ function testInstalls(http) {
 
                     http.post('/api/installs')
                         .send({
-                            jobID: job._id,
-                            agentID: agent._id
+                            job: job._id,
+                            agent: agent._id
                         })
                         .expect(201)
                         .expect(function (res) {
@@ -101,8 +101,8 @@ function testInstalls(http) {
 
                 http.post('/api/installs')
                     .send({
-                        jobID: job._id,
-                        agentID: agent._id
+                        job: job._id,
+                        agent: agent._id
                     })
                     .expect(201)
                     .expect(function (res) {
@@ -118,8 +118,8 @@ function testInstalls(http) {
 
                 http.post('/api/installs')
                     .send({
-                        jobID: job._id,
-                        agentID: agent._id
+                        job: job._id,
+                        agent: agent._id
                     })
                     .expect(400)
                     .expect(function (res) {
@@ -136,25 +136,27 @@ function testInstalls(http) {
 
                 http.post('/api/installs')
                     .send({
-                        jobID: job._id,
-                        agentID: agent._id
+                        job: job._id,
+                        agent: agent._id
                     })
                     .expect(201)
                     .expect(function (res) {
                         var install = lastInstall = res.body;
                         assert.ok(install._id);
                     })
-                    .end(done);
+                    .end(function(err, res) {
+                        done();
+                    });
             });
 
-            it('with job with no file', function (done) {
+            it('with job sans file', function (done) {
                 var job = jobs.find(function (job) { return !job.fileHash; });
                 var agent = agents[1];
 
                 http.post('/api/installs')
                     .send({
-                        jobID: job._id,
-                        agentID: agent._id
+                        job: job._id,
+                        agent: agent._id
                     })
                     .expect(400)
                     .expect(function (res) {

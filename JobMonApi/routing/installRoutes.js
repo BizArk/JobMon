@@ -7,7 +7,8 @@ function installRoutes(jmdb) {
     function createInstall(req, res) {
         var install = new jmdb.Install(req.body);
 
-        jmdb.Job.findById(install.jobID, function (err, job) {
+        // We cannot install a job if it does not have an install file associated with it.
+        jmdb.Job.findById(install.job, function (err, job) {
             if (err) {
                 err = toStandardErr(err);
                 res.status(400).json(err);
