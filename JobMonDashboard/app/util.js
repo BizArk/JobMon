@@ -51,6 +51,6 @@ JMUtil.countUnique = function countUnique(source) {
             result[item] += 1;
         }
     }
-    console.log(result);
+
     return result;
 }
