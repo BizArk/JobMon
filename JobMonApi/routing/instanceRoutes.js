@@ -3,14 +3,49 @@ var routingUtil = require('./routingUtil.js');
 
 function instanceRoutes(jmdb) {
 
-    function createInstance(req, res) {
-        var instance = new jmdb.Instance(req.body);
-        instance.save(routingUtil.saveResponse(res, 201, instance));
+    function completeInstance(req, res) {
+        var instance = req.data;
+        instance.completed = Date.now();
+        instance.save(routingUtil.saveResponse(res, 200, instance));
     }
 
-    function deleteInstance(req, res) {
-        var instance = req.data;
-        jmdb.Instance.remove(routingUtil.saveResponse(res, 204));
+    function createInstance(req, res) {
+        var instance = new jmdb.Instance(req.body);
+        jmdb.Job.findById(instance.job, function (err, job) {
+            if (err) {
+                err = toStandardErr(err);
+                return res.status(400).json(err);
+            }
+
+            if (!job) {
+                // Let Mongoose handle missing job.
+                return instance.save(routingUtil.saveResponse(res, 201, instance));
+            }
+
+            if ((job.maxInstances || 0) <= 0) {
+                // maxInstances not set, so go ahead and create a new one.
+                return instance.save(routingUtil.saveResponse(res, 201, instance));
+            }
+
+            jmdb.Instance.count({ job: instance.job, completed: null }, function (err, count) {
+                if (err) {
+                    err = toStandardErr(err);
+                    return res.status(400).json(err);
+                }
+
+                if (count >= job.maxInstances) {
+                    return res.status(400).json({
+                        name: 'MaxInstancesExceeded',
+                        message: `Unable to start ${job.displayName}. Exceeded max instances of ${job.maxInstances}.`
+                    });
+                }
+
+                return instance.save(routingUtil.saveResponse(res, 201, instance));
+
+            });
+        });
+
+
     }
 
     function getInstance(req, res) {
@@ -50,15 +85,9 @@ function instanceRoutes(jmdb) {
         instance.save(routingUtil.saveResponse(res, 200, instance));
     }
 
-    function updateInstance(req, res) {
+    function startInstance(req, res) {
         var instance = req.data;
-        instance.displayName = req.body.displayName;
-        instance.description = req.body.description;
-        instance.status = req.body.status;
-        instance.configuration = req.body.configuration;
-        instance.minLogLevel = req.body.minLogLevel;
-        instance.installPath = req.body.installPath;
-        instance.version = req.body.version;
+        instance.started = Date.now();
         instance.save(routingUtil.saveResponse(res, 200, instance));
     }
 
@@ -71,10 +100,17 @@ function instanceRoutes(jmdb) {
         .post(createInstance);
 
     router.route('/:instanceID')
-        .delete(deleteInstance)
         .get(getInstance)
-        .patch(patchInstance)
-        .put(updateInstance);
+        .patch(patchInstance);
+
+    router.route('/:instanceID/start')
+        .put(startInstance);
+
+    router.route('/:instanceID/complete')
+        .put(completeInstance);
+
+    // router.route('/:instanceID/logs')
+    //     .post(logMessage);
 
     return router;
 }

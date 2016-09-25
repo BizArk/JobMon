@@ -1,11 +1,12 @@
 var assert = require('assert');
-var debug = require('debug')('jobmon.test.installs')
+var debug = require('debug')('jobmon.test.Instances')
 var async = require('async');
 
 function testInstances(http) {
     var lastInstance;
     var jobs;
     var agents;
+    var testJob;
 
     describe('Instances', function () {
 
@@ -18,6 +19,7 @@ function testInstances(http) {
                 if (results) {
                     jobs = results[0];
                     agents = results[1];
+                    testJob = jobs.find(j => j.name == 'TestJob01');
                 }
                 done(err);
             });
@@ -68,59 +70,84 @@ function testInstances(http) {
 
             it('with required information', function (done) {
 
-                var job = jobs[0];
                 var agent = agents[0];
 
                 http.post('/api/instances')
                     .send({
-                        job: job._id,
-                        agent: agent._id,
-                        fileHash: 'abc123'
+                        job: testJob._id,
+                        agent: agent._id
                     })
                     .expect(201)
                     .expect(function (res) {
-                        var install = lastInstall = res.body;
-                        assert.ok(install._id);
+                        var instance = lastInstance = res.body;
+                        assert.ok(instance._id);
+                        assert.ok(!instance.started);
                     })
                     .end(done);
 
             });
 
-            it('with required information 2', function (done) {
-
-                var job = jobs[0];
-                var agent = agents[0];
-
-                http.post('/api/instances')
-                    .send({
-                        job: job._id,
-                        agent: agent._id,
-                        fileHash: 'abc123'
-                    })
-                    .expect(201)
-                    .expect(function (res) {
-                        var install = lastInstall = res.body;
-                        assert.ok(install._id);
-                    })
-                    .end(done);
-
-            });
-
-            it('can be deleted', function (done) {
+            it('cannot be deleted', function (done) {
+                // Instances should not be removed directly.
+                // They are removed by the scheduler when it 
+                // hits maxInstancesToKeep.
                 http
-                    .del(`/api/instances/${lastInstall._id}`)
-                    .expect(204)
-                    .end(done);
-            });
-
-            it('and install is deleted', function (done) {
-                http
-                    .get(`/api/instances/${lastInstall._id}`)
+                    .del(`/api/instances/${lastInstance._id}`)
                     .expect(404)
                     .end(done);
             });
 
+            it('can be started', function(done) {
+                http.put(`/api/instances/${lastInstance._id}/start`)
+                    .expect(200)
+                    .end(done);
+            });
+
+            it('cannot create more than 1 running instance', function (done) {
+
+                var agent = agents[0];
+
+                http.post('/api/instances')
+                    .send({
+                        job: testJob._id,
+                        agent: agent._id
+                    })
+                    .expect(400)
+                    .expect(function(res) {
+                        debug(res.body.message);
+                        assert.ok(res.body.name == 'MaxInstancesExceeded')
+                    })
+                    .end(done);
+
+            });
+
+            it('can be completed', function(done) {
+                http.put(`/api/instances/${lastInstance._id}/complete`)
+                    .expect(200)
+                    .end(done);
+            });
+
+            it('can be started after other instance completed', function (done) {
+
+                var agent = agents[0];
+
+                http.post('/api/instances')
+                    .send({
+                        job: testJob._id,
+                        agent: agent._id
+                    })
+                    .expect(201)
+                    .expect(function (res) {
+                        var instance = lastInstance = res.body;
+                        assert.ok(instance._id);
+                        assert.ok(!instance.started);
+                    })
+                    .end(done);
+
+            });
+
         });
+
     });
 }
 

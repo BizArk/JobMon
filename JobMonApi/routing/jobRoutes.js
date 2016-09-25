@@ -29,7 +29,8 @@ function jobRoutes(jmdb) {
 
         var rd = fs.createReadStream(srcPath);
         rd.on('data', function (data) {
-            hash.update(data, 'utf8');
+            if (hash)
+                hash.update(data, 'utf8');
         });
         rd.on("error", function (err) {
             done(err);
@@ -39,8 +40,12 @@ function jobRoutes(jmdb) {
             done(err);
         });
         wr.on("close", function (ex) {
-            var fileHash = hash.digest('hex');
-            done(null, fileHash);
+            if (hash) {
+                var fileHash = hash.digest('hex');
+                done(null, fileHash);
+            } else {
+                done(null, null);
+            }
         });
         rd.pipe(wr);
 
@@ -135,7 +140,9 @@ function jobRoutes(jmdb) {
             job.displayName = jobCfg.displayName || jobCfg.name;
             job.description = jobCfg.description;
             job.minLogLevel = jobCfg.minLogLevel || 'Info';
-            job.numberOfInstances = jobCfg.numberOfInstances || 1;
+            job.maxInstances = jobCfg.maxInstances || 1;
+            job.maxInstancesToKeep = jobCfg.maxInstancesToKeep || 100;
+            job.maxTimeToCompleteInMinutes = jobCfg.maxTimeToCompleteInMinutes;
             debug(job);
 
             var destPath = path.resolve(global.appRoot, cfg.downloadPath, 'jobs', job._id + '.zip');
