@@ -93,6 +93,18 @@ function jobRoutes(jmdb) {
         });
     }
 
+    function patchJob(req, res) {
+        var job = req.data;
+        for (var key in req.body) {
+            switch (key) {
+                case 'status': // Only field that can be updated. The rest should be updated in the file.
+                    job[key] = req.body[key];
+                    break;
+            }
+        }
+        job.save(routingUtil.saveResponse(res, 200, job));
+    }
+
     function registerJob(req, res) {
         if (!req.file) {
             return res.status(400).json({
@@ -186,6 +198,7 @@ function jobRoutes(jmdb) {
 
     router.route('/:jobID')
         .delete(deleteJob)
+        .patch(patchJob)
         .get(getJob);
 
     return router;

@@ -6,7 +6,8 @@ function testInstances(http) {
     var lastInstance;
     var jobs;
     var agents;
-    var testJob;
+    var testJob1;
+    var testJob2;
 
     describe('Instances', function () {
 
@@ -19,7 +20,8 @@ function testInstances(http) {
                 if (results) {
                     jobs = results[0];
                     agents = results[1];
-                    testJob = jobs.find(j => j.name == 'TestJob01');
+                    testJob1 = jobs.find(j => j.name == 'TestJob01');
+                    testJob2 = jobs.find(j => j.name == 'TestJob02');
                 }
                 done(err);
             });
@@ -74,7 +76,7 @@ function testInstances(http) {
 
                 http.post('/api/instances')
                     .send({
-                        job: testJob._id,
+                        job: testJob1._id,
                         agent: agent._id
                     })
                     .expect(201)
@@ -109,7 +111,7 @@ function testInstances(http) {
 
                 http.post('/api/instances')
                     .send({
-                        job: testJob._id,
+                        job: testJob1._id,
                         agent: agent._id
                     })
                     .expect(400)
@@ -133,7 +135,7 @@ function testInstances(http) {
 
                 http.post('/api/instances')
                     .send({
-                        job: testJob._id,
+                        job: testJob1._id,
                         agent: agent._id
                     })
                     .expect(201)
@@ -144,6 +146,36 @@ function testInstances(http) {
                     })
                     .end(done);
 
+            });
+
+            it('can disable job', function(done) {
+                http.patch(`/api/jobs/${testJob2._id}`)
+                    .send({
+                        status: 'Disabled'
+                    })
+                    .expect(200)
+                    .expect(function (res) {
+                        var job = res.body;
+                        assert.ok(job._id == testJob2._id);
+                        assert.ok(job.status == 'Disabled');
+                    })
+                    .end(done);
+            });
+
+            it('cannot start instance for disabled job', function(done) {
+                var agent = agents[0];
+
+                http.post('/api/instances')
+                    .send({
+                        job: testJob2._id,
+                        agent: agent._id
+                    })
+                    .expect(400)
+                    .expect(function(res) {
+                        debug(res.body.message);
+                        assert.ok(res.body.name == 'JobDisabled')
+                    })
+                    .end(done);
             });
 
         });

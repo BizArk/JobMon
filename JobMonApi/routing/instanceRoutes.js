@@ -11,40 +11,66 @@ function instanceRoutes(jmdb) {
 
     function createInstance(req, res) {
         var instance = new jmdb.Instance(req.body);
-        jmdb.Job.findById(instance.job, function (err, job) {
-            if (err) {
-                err = toStandardErr(err);
-                return res.status(400).json(err);
-            }
-
-            if (!job) {
-                // Let Mongoose handle missing job.
+        jmdb.Agent.findById(instance.agent, function (err, agent) {
+            if (!agent) {
+                // Let Mongoose handle missing agent (better error messages).
                 return instance.save(routingUtil.saveResponse(res, 201, instance));
             }
 
-            if ((job.maxInstances || 0) <= 0) {
-                // maxInstances not set, so go ahead and create a new one.
-                return instance.save(routingUtil.saveResponse(res, 201, instance));
+            if (!agent.enabled) {
+                return res.status(400).json({
+                    name: 'AgentDisabled',
+                    message: `${agent.host} has been disabled.`
+                });
             }
 
-            jmdb.Instance.count({ job: instance.job, completed: null }, function (err, count) {
+            jmdb.Job.findById(instance.job, function (err, job) {
                 if (err) {
                     err = toStandardErr(err);
                     return res.status(400).json(err);
                 }
 
-                if (count >= job.maxInstances) {
+                if (!job) {
+                    // Let Mongoose handle missing job (better error messages).
+                    return instance.save(routingUtil.saveResponse(res, 201, instance));
+                }
+
+                if (job.status != 'Enabled') {
+                    var msg;
+                    if(job.status == 'Disabled')
+                        msg = `${job.displayName} has been disabled.`;
+                    else
+                        msg = `${job.displayName} is in an error state and cannot be started.`;
                     return res.status(400).json({
-                        name: 'MaxInstancesExceeded',
-                        message: `Unable to start ${job.displayName}. Exceeded max instances of ${job.maxInstances}.`
+                        name: 'JobDisabled',
+                        message: msg
                     });
                 }
 
-                return instance.save(routingUtil.saveResponse(res, 201, instance));
+                if ((job.maxInstances || 0) <= 0) {
+                    // maxInstances not set, so go ahead and create a new one.
+                    return instance.save(routingUtil.saveResponse(res, 201, instance));
+                }
 
+                // Check to see how many instances are currently running.
+                jmdb.Instance.count({ job: instance.job, completed: null }, function (err, count) {
+                    if (err) {
+                        err = toStandardErr(err);
+                        return res.status(400).json(err);
+                    }
+
+                    if (count >= job.maxInstances) {
+                        return res.status(400).json({
+                            name: 'MaxInstancesExceeded',
+                            message: `Unable to start ${job.displayName}. Exceeded max instances of ${job.maxInstances}.`
+                        });
+                    }
+
+                    return instance.save(routingUtil.saveResponse(res, 201, instance));
+
+                });
             });
         });
-
 
     }
 
@@ -74,10 +100,7 @@ function instanceRoutes(jmdb) {
         var instance = req.data;
         for (var key in req.body) {
             switch (key) {
-                case '_id':
-                    // Ignore.
-                    break;
-                default:
+                case 'stop': // Only fields allowed to be patched.
                     instance[key] = req.body[key];
                     break;
             }

@@ -19,7 +19,7 @@ var jobSchema = new Schema({
     minLogLevel: { // Only log messages that are at this level and to the right of it (see enum)
         type: String,
         enum: ['Trace', 'Debug', 'Info', 'Warn', 'Error', 'Fatal']
-    },    
+    },
     maxInstances: { // The maximum number of instances that can be running at a time.
         type: Number,
         min: 1
@@ -34,22 +34,7 @@ var jobSchema = new Schema({
     },
     autoComplete: Boolean, // If the job takes too long to complete, this will automatically mark it as completed. It will not stop the process, but if the process is still running, it will get a disabled notice. If false (default), the job will go into an error state.  
     fileHash: String, // A hash of the file so we can know if it is the one that is installed or not. 
-    fileLastUpdated: Date, // The last time the file was uploaded.
-    schedule: { // The schedule used to run the job.
-        minutes: { // Interval (ex, every 5 minutes)
-            type: Number,
-            min: 1
-        },
-        timeOfDay: { // Minutes from midnight (local)
-            type: Number,
-            min: 0
-        },
-        daysOfWeek: { // Days of the week to run the job
-            type: String,
-            enum: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        }
-
-    }
+    fileLastUpdated: Date // The last time the file was uploaded.
 }, {
         collection: 'jobs'
     });
