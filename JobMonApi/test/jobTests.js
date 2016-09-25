@@ -1,4 +1,5 @@
 var assert = require('assert');
+var debug = require('debug')('jobmon.test.jobs')
 
 function binaryParser(res, callback) {
     res.setEncoding('binary');
@@ -30,41 +31,26 @@ function testJobs(http) {
         });
 
         describe('register job', function () {
-            it('without required information', function (done) {
+            it('without install file', function (done) {
                 http
                     .post('/api/jobs')
                     .expect(400)
                     .expect(function (res) {
                         var errs = res.body;
-                        assert.equal('ValidationError', errs.name);
+                        assert.equal('FileMissing', errs.name);
                     })
                     .end(done);
             });
 
-            it('with required information', function (done) {
+            it('with valid install file', function (done) {
                 http
                     .post('/api/jobs')
-                    .send({
-                        displayName: 'Test Job',
-                        description: 'A fake job for testing purposes.',
-                        status: 'Enabled',
-                        configuration: null,
-                        minLogLevel: 'Info',
-                        numberOfInstances: 1
-                    })
+                    .attach('job', '.\\test\\testjob01.zip')
                     .expect(201)
                     .expect(function (res) {
-                        var job = lastJob = res.body;
-                        assert.ok(job._id);
+                        lastJob = res.body;
+                        debug(lastJob);
                     })
-                    .end(done);
-            });
-
-            it('and upload file', function (done) {
-                http
-                    .post(`/api/jobs/${lastJob._id}/upload`)
-                    .attach('job', '.\\test\\testjob.zip')
-                    .expect(201)
                     .end(done);
             });
 
@@ -83,109 +69,56 @@ function testJobs(http) {
                     });
             });
 
-            it('can be deleted', function(done) {
+            it('can be deleted', function (done) {
                 http
                     .del(`/api/jobs/${lastJob._id}`)
                     .expect(204)
                     .end(done);
             });
 
-            it('and job is deleted', function(done) {
+            it('and job is deleted', function (done) {
                 http
                     .get(`/api/jobs/${lastJob._id}`)
                     .expect(404)
                     .end(done);
             });
 
-            it('and file is removed', function(done) {
+            it('and file is removed', function (done) {
                 http
                     .get(`/downloads/jobs/${lastJob._id}.zip`)
                     .expect(404)
                     .end(done);
             });
 
-            it('with required information again', function (done) {
+            it('with same install file again', function (done) {
                 http
                     .post('/api/jobs')
-                    .send({
-                        displayName: 'Test Job',
-                        description: 'A fake job for testing purposes.',
-                        status: 'Enabled',
-                        configuration: null,
-                        minLogLevel: 'Info',
-                        numberOfInstances: 1
-                    })
-                    .expect(201)
-                    .expect(function (res) {
-                        var job = lastJob = res.body;
-                        assert.ok(job._id);
-                    })
-                    .end(done);
-            });
-
-            it('and upload file', function (done) {
-                http
-                    .post(`/api/jobs/${lastJob._id}/upload`)
-                    .attach('job', '.\\test\\testjob.zip')
+                    .attach('job', '.\\test\\testjob01.zip')
                     .expect(201)
                     .end(done);
             });
 
-            it('with duplicate information', function (done) {
+            it('can be updated', function (done) {
                 http
                     .post('/api/jobs')
-                    .send({
-                        displayName: 'Test Job',
-                        description: 'A fake job for testing purposes.',
-                        status: 'Enabled',
-                        configuration: null,
-                        minLogLevel: 'Info',
-                        numberOfInstances: 1
-                    })
-                    .expect(400)
-                    .expect(function (res) {
-                        var errs = res.body;
-                        assert.equal('MongoDB', errs.name);
-                        assert.equal('11000', errs.code);
-                    })
+                    .attach('job', '.\\test\\testjob01b.zip')
+                    .expect(200)
                     .end(done);
             });
 
-            it('with valid information', function (done) {
+            it('with a different name', function (done) {
                 http
                     .post('/api/jobs')
-                    .send({
-                        displayName: 'Another Test Job',
-                        description: 'A fake job for testing purposes.',
-                        status: 'Enabled',
-                        configuration: null,
-                        minLogLevel: 'Info',
-                        numberOfInstances: 1
-                    })
+                    .attach('job', '.\\test\\testjob02.zip')
                     .expect(201)
-                    .expect(function (res) {
-                        var job = lastJob = res.body;
-                        assert.ok(job._id);
-                    })
                     .end(done);
             });
 
-            it('with valid information', function (done) {
+            it('with a different name', function (done) {
                 http
                     .post('/api/jobs')
-                    .send({
-                        displayName: 'Fake Job',
-                        description: 'A fake job for testing purposes.',
-                        status: 'Enabled',
-                        configuration: null,
-                        minLogLevel: 'Info',
-                        numberOfInstances: 1
-                    })
+                    .attach('job', '.\\test\\testjob03.zip')
                     .expect(201)
-                    .expect(function (res) {
-                        var job = lastJob = res.body;
-                        assert.ok(job._id);
-                    })
                     .end(done);
             });
         });

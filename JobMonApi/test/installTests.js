@@ -149,23 +149,6 @@ function testInstalls(http) {
                     });
             });
 
-            it('with job sans file', function (done) {
-                var job = jobs.find(function (job) { return !job.fileHash; });
-                var agent = agents[1];
-
-                http.post('/api/installs')
-                    .send({
-                        job: job._id,
-                        agent: agent._id
-                    })
-                    .expect(400)
-                    .expect(function (res) {
-                        var errs = res.body;
-                        assert.equal('InvalidJob', errs.name);
-                    })
-                    .end(done);
-            });
-
             describe('getting list of installs', function () {
                 it('should return 2 installs', function (done) {
                     http

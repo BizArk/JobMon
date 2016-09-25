@@ -6,22 +6,8 @@ var debug = require('debug')('jobmon.route.admin')
 function adminRoutes(jmdb) {
 
     function clearDB(req, res) {
-        var fns = [
-            jmdb.Install.remove().exec(),
-            jmdb.Instance.remove().exec(),
-            jmdb.Agent.remove().exec(),
-            jmdb.Job.remove().exec()
-        ]
-
-        Promise.all(fns)
-            .then(function() {
-                debug('Cleared the database');
-                return res.status(204).send('The database has been cleared.');
-            })
-            .catch(function(err) {
-                debug('Unable to clear the database.');
-                return res.status(500).send(err);
-            });
+        mongoose.connection.db.dropDatabase();
+        return res.status(204).json({ message: 'The database has been dropped.' })
     }
 
     var router = express.Router();

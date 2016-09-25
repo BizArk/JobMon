@@ -5,6 +5,7 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var multer = require('multer');
 var debug = require('debug')('jobmon.route.job')
+var AdmZip = require('adm-zip');
 
 var cfg = require('../config.js');
 var routingUtil = require('./routingUtil.js');
@@ -75,9 +76,9 @@ function jobRoutes(jmdb) {
                 jobs.forEach(function (job) {
                     var retJob = job.toJSON();
                     retJob.links = {
-                        self: `http://${req.headers.host}/api/jobs/${retJob._id}`                        
+                        self: `http://${req.headers.host}/api/jobs/${retJob._id}`
                     };
-                    if(retJob.fileHash) {
+                    if (retJob.fileHash) {
                         retJob.links.download = `http://${req.headers.host}/downloads/jobs/${retJob._id}.zip`;
                     }
                     returnedJobs.push(retJob);
@@ -87,58 +88,74 @@ function jobRoutes(jmdb) {
         });
     }
 
-    function patchJob(req, res) {
-        var job = req.data;
-        for (var key in req.body) {
-            switch (key) {
-                case '_id':
-                    // Ignore.
-                    break;
-                default:
-                    job[key] = req.body[key];
-                    break;
-            }
-        }
-        job.save(routingUtil.saveResponse(res, 200, job));
-    }
-
     function registerJob(req, res) {
-        var job = new jmdb.Job(req.body);
-        job.save(routingUtil.saveResponse(res, 201, job));
-    }
-
-    function uploadJob(req, res) {
-        var job = req.data;
+        if (!req.file) {
+            return res.status(400).json({
+                name: 'FileMissing',
+                message: 'The install for the job is required.'
+            });
+        }
 
         var srcPath = req.file.path;
-        var destPath = path.resolve(global.appRoot, cfg.downloadPath, 'jobs', job._id + '.zip');
-        copyFile(srcPath, destPath, true, function (err, fileHash) {
+
+        var zip = new AdmZip(srcPath);
+        var json = zip.readAsText('jobmon.json');
+        if (!json) {
+            return res.status(400).json({
+                name: 'InvalidJobFile',
+                message: 'The jobmon.json configuration file is required for job files.'
+            });
+        }
+
+        json = json.replace(/\0/g, '').trim(); // Make sure the JSON is valid.
+        var jobCfg = JSON.parse(json);
+
+        var query = jmdb.Job.find({ name: jobCfg.name });
+        query.exec(function (err, jobs) {
+
             if (err) {
-                res.status(400).json({
-                    name: 'CopyFile',
-                    message: err
-                });
-                return;
+                debug(err);
+                err = routingUtil.toStandardErr(err);
+                return res.status(400).json(err);
             }
 
-            job.fileHash = fileHash;
-            job.fileLastUpdated = Date.now();
-            job.save(routingUtil.saveResponse(res, 201, job));
+            var job;
+            var newJob = false;
+            if (jobs.length > 0) {
+                debug('Found job');
+                job = jobs[0];
+            } else {
+                debug('NEW JOB');
+                newJob = true;
+                job = new jmdb.Job();
+                job.name = jobCfg.name;
+                job.status = 'Enabled';
+            }
 
-            fs.unlink(srcPath);
+            job.displayName = jobCfg.displayName || jobCfg.name;
+            job.description = jobCfg.description;
+            job.minLogLevel = jobCfg.minLogLevel || 'Info';
+            job.numberOfInstances = jobCfg.numberOfInstances || 1;
+            debug(job);
+
+            var destPath = path.resolve(global.appRoot, cfg.downloadPath, 'jobs', job._id + '.zip');
+            copyFile(srcPath, destPath, true, function (err, fileHash) {
+                if (err) {
+                    res.status(400).json({
+                        name: 'CopyFile',
+                        message: err
+                    });
+                    return;
+                }
+
+                job.fileHash = fileHash;
+                job.fileLastUpdated = Date.now();
+                job.save(routingUtil.saveResponse(res, newJob ? 201 : 200, job));
+
+                fs.unlink(srcPath);
+            });
         });
-    }
 
-    function updateJob(req, res) {
-        var job = req.data;
-        job.displayName = req.body.displayName;
-        job.description = req.body.description;
-        job.status = req.body.status;
-        job.configuration = req.body.configuration;
-        job.minLogLevel = req.body.minLogLevel;
-        job.installPath = req.body.installPath;
-        job.version = req.body.version;
-        job.save(routingUtil.saveResponse(res, 200, job));
     }
 
     var router = express.Router();
@@ -158,16 +175,11 @@ function jobRoutes(jmdb) {
 
     router.route('/')
         .get(getJobs)
-        .post(registerJob, parseUploads.single('jobinstall'));
+        .post(parseUploads.single('job'), registerJob);
 
     router.route('/:jobID')
         .delete(deleteJob)
-        .get(getJob)
-        .patch(patchJob)
-        .put(updateJob);
-
-    router.route('/:jobID/upload')
-        .post(parseUploads.single('job'), uploadJob);
+        .get(getJob);
 
     return router;
 }

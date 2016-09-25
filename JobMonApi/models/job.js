@@ -2,17 +2,20 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var jobSchema = new Schema({
-    displayName: { 
+    name: {
         type: String,
         required: true,
         unique: true
+    },
+    displayName: { 
+        type: String,
+        required: true
     },
     description: String,
     status: {
         type: String,
         enum: ['Enabled', 'Disabled', 'Error']
     },
-    configuration: String, // Json blob that is sent to the job.
     minLogLevel: { // Only log messages that are at this level and to the right of it (see enum)
         type: String,
         enum: ['Trace', 'Debug', 'Info', 'Warn', 'Error', 'Fatal']
