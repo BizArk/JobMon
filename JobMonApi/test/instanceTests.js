@@ -261,6 +261,17 @@ function testInstances(http) {
 
             });
 
+            it('get the log messages.', function(done) {
+
+                http.get(`/api/instances/${lastInstance._id}/logs`)
+                    .expect(200)
+                    .expect(function(res) {
+                        debug(res.body);
+                    })
+                    .end(done);
+
+            });
+
         });
 
     });

@@ -96,6 +96,19 @@ function instanceRoutes(jmdb) {
         });
     }
 
+    function getMessages(req, res) {
+        var instance = req.data;
+
+        jmdb.Message.find({ instance: instance._id })
+            .select('-_id -job -instance')
+            .exec(function (err, messages) {
+                if (err)
+                    return res.status(500).send(err);
+
+                return res.status(200).json(messages);
+            });
+    }
+
     function logMessage(req, res) {
         var instance = req.data;
         var msg = req.body;
@@ -184,6 +197,7 @@ function instanceRoutes(jmdb) {
         .put(startInstance);
 
     router.route('/:instanceID/logs')
+        .get(getMessages)
         .post(logMessage);
 
     router.route('/:instanceID/complete')
