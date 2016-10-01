@@ -3,7 +3,7 @@ var debug = require('debug')('jobmon.route.util')
 module.exports = (function () {
     function findDocByID(model, paramName, missingMsg) {
         return function (req, res, next) {
-            //debug(model.collection.name + '.findDocByID(' + req.params[paramName] + ')');
+            debug(model.collection.name + '.findDocByID(' + req.params[paramName] + ')');
             model.findById(req.params[paramName])
                 .exec(function (err, obj) {
                     if (err) {
@@ -13,6 +13,7 @@ module.exports = (function () {
                         req.data = obj;
                         next();
                     } else {
+                        //debug('Doc not found');
                         res.status(404).send(missingMsg || 'Unable to find document.');
                     }
                 });

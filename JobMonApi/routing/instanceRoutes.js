@@ -1,5 +1,6 @@
 var express = require('express');
 var routingUtil = require('./routingUtil.js');
+var debug = require('debug')('jobmon.route.instance')
 
 function instanceRoutes(jmdb) {
 
@@ -37,7 +38,7 @@ function instanceRoutes(jmdb) {
 
                 if (job.status != 'Enabled') {
                     var msg;
-                    if(job.status == 'Disabled')
+                    if (job.status == 'Disabled')
                         msg = `${job.displayName} has been disabled.`;
                     else
                         msg = `${job.displayName} is in an error state and cannot be started.`;
@@ -81,18 +82,71 @@ function instanceRoutes(jmdb) {
     function getInstances(req, res) {
         jmdb.Instance.find(function (err, instances) {
             if (err)
-                res.status(500).send(err);
-            else {
-                var returnedInstances = [];
-                instances.forEach(function (instance) {
-                    var retInstance = instance.toJSON();
-                    retInstance.links = {
-                        self: `http://${req.headers.host}/api/instances/${retInstance._id}`
-                    };
-                    returnedInstances.push(retInstance);
+                return res.status(500).send(err);
+
+            var returnedInstances = [];
+            instances.forEach(function (instance) {
+                var retInstance = instance.toJSON();
+                retInstance.links = {
+                    self: `http://${req.headers.host}/api/instances/${retInstance._id}`
+                };
+                returnedInstances.push(retInstance);
+            });
+            res.status(200).json(returnedInstances);
+        });
+    }
+
+    function logMessage(req, res) {
+        var instance = req.data;
+        var msg = req.body;
+
+        if (!instance.started) {
+            return res.status(400).json({
+                name: 'InstanceNotStarted',
+                message: 'Cannot log messages until the instance has been started.'
+            });
+        }
+
+        if (instance.completed) {
+            return res.status(400).json({
+                name: 'InstanceCompleted',
+                message: 'Cannot log messages once the instance has been completed.'
+            });
+        }
+
+        var logLevels = jmdb.Job.schema.path('minLogLevel').enumValues;
+        var logLevelIdx = logLevels.indexOf(msg.logLevel);
+        if (logLevelIdx < 0) {
+            return res.status(400).json({
+                name: 'InvalidLogLevel',
+                message: `The log level is not valid. Must be one of the following: [${logLevels.toString()}]`
+            });
+        }
+
+        jmdb.Job.findById(instance.job, function (err, job) {
+            if (err)
+                return res.status(500).send(err);
+
+            if (!job) {
+                return res.status(400).json({
+                    name: 'JobNotFound',
+                    message: 'Unable to find the job associated with this instance.'
                 });
-                res.status(200).json(returnedInstances);
             }
+
+            var minLogLevelIdx = logLevels.indexOf(job.minLogLevel);
+            debug(job);
+            if (logLevelIdx < minLogLevelIdx) {
+                return res.status(200).json({
+                    message: `The message was not logged. The log level (${msg.logLevel}) was less than the minimum logging level for the job (${job.minLogLevel}).`
+                });
+            }
+
+            var logMsg = new jmdb.Message(msg);
+            logMsg.instance = instance._id;
+            logMsg.job = job._id;
+
+            return logMsg.save(routingUtil.saveResponse(res, 201, logMsg));
         });
     }
 
@@ -129,11 +183,11 @@ function instanceRoutes(jmdb) {
     router.route('/:instanceID/start')
         .put(startInstance);
 
+    router.route('/:instanceID/logs')
+        .post(logMessage);
+
     router.route('/:instanceID/complete')
         .put(completeInstance);
-
-    // router.route('/:instanceID/logs')
-    //     .post(logMessage);
 
     return router;
 }

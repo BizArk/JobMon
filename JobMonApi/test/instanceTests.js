@@ -178,6 +178,89 @@ function testInstances(http) {
                     .end(done);
             });
 
+            it('cannot log messages from unstarted instance.', function(done) {
+
+                http.post(`/api/instances/${lastInstance._id}/logs`)
+                    .send({
+                        logLevel: 'Info',
+                        message: 'This is a test info message'
+                    })
+                    .expect(400)
+                    .expect(function(res) {
+                        debug(res.body.message);
+                        assert.ok(res.body.name == 'InstanceNotStarted')
+                    })
+                    .end(done);
+
+            });
+
+            it('can be started', function(done) {
+                http.put(`/api/instances/${lastInstance._id}/start`)
+                    .expect(200)
+                    .end(done);
+            });
+
+            it('cannot log messages without a log level.', function(done) {
+
+                http.post(`/api/instances/${lastInstance._id}/logs`)
+                    .send({
+                        message: 'This is a test info message'
+                    })
+                    .expect(400)
+                    .expect(function(res) {
+                        debug(res.body.message);
+                        assert.ok(res.body.name == 'InvalidLogLevel')
+                    })
+                    .end(done);
+
+            });
+
+            it('cannot log messages with an invalid log level.', function(done) {
+
+                http.post(`/api/instances/${lastInstance._id}/logs`)
+                    .send({
+                        logLevel: 'BAD',
+                        message: 'This is a test info message'
+                    })
+                    .expect(400)
+                    .expect(function(res) {
+                        debug(res.body.message);
+                        assert.ok(res.body.name == 'InvalidLogLevel')
+                    })
+                    .end(done);
+
+            });
+
+            it('do not log if under minimum logging level for job.', function(done) {
+
+                http.post(`/api/instances/${lastInstance._id}/logs`)
+                    .send({
+                        logLevel: 'Trace',
+                        message: 'This is a test info message'
+                    })
+                    .expect(200)
+                    .expect(function(res) {
+                        debug(res.body.message);
+                    })
+                    .end(done);
+
+            });
+
+            it('log the message.', function(done) {
+
+                http.post(`/api/instances/${lastInstance._id}/logs`)
+                    .send({
+                        logLevel: 'Info',
+                        message: 'This is a test info message'
+                    })
+                    .expect(201)
+                    .expect(function(res) {
+                        debug(res.body.message);
+                    })
+                    .end(done);
+
+            });
+
         });
 
     });

@@ -21,16 +21,7 @@ var instanceSchema = new Schema({
     },
     started: Date, // The time the running job first acknowledges the instance. (the agent starts the job and the first thing the job should do is acknowledge the instance)
     completed: Date, // The time the instance completed. A null here will count as a running instance, preventing new instances from starting.
-    stop: Boolean, // Can be set to stop this instance after the current loop.
-    errorMsgs: [{ // Log messages are stored in a log file, but we keep copies of any errors in MongoDB.
-        created: Date, // The time the log message was created.
-        logLevel: { // The level of the error. Should be only the error levels from jobSchema.minLogLevel.
-            type: String,
-            enum: ['Error', 'Fatal']
-        },
-        message: String, // The error message.
-        details: String // An optional detailed description of the error. As an example, for .Net this might include the type of exception, exception message, and stack trace.
-    }]
+    stop: Boolean // Can be set to stop this instance after the current loop.
 },{
     collection: 'instances'
 });
@@ -50,6 +41,8 @@ var instanceSchema = new Schema({
  * If the instance is started but not completed (amount of time configured by the job), it will go into an error condition. 
  */
 
+instanceSchema.index({ job: 1 });
+instanceSchema.index({ agent: 1 });
 instanceSchema.plugin(idvalidator);
 
 module.exports = mongoose.model('instance', instanceSchema);
