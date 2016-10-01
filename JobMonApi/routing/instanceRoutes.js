@@ -100,7 +100,8 @@ function instanceRoutes(jmdb) {
         var instance = req.data;
 
         jmdb.Message.find({ instance: instance._id })
-            .select('-_id -job -instance')
+            .select('created logLevel message details source -_id')
+            .sort({ created: 1 })
             .exec(function (err, messages) {
                 if (err)
                     return res.status(500).send(err);

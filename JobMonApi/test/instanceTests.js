@@ -246,12 +246,29 @@ function testInstances(http) {
 
             });
 
-            it('log the message.', function(done) {
+            it('log a message.', function(done) {
 
                 http.post(`/api/instances/${lastInstance._id}/logs`)
                     .send({
                         logLevel: 'Info',
                         message: 'This is a test info message'
+                    })
+                    .expect(201)
+                    .expect(function(res) {
+                        debug(res.body.message);
+                    })
+                    .end(done);
+
+            });
+
+            it('log an error.', function(done) {
+
+                http.post(`/api/instances/${lastInstance._id}/logs`)
+                    .send({
+                        logLevel: 'Error',
+                        message: 'You really screwed it up this time!',
+                        details: new Error('Something really bad happened.').stack,
+                        source: '123'
                     })
                     .expect(201)
                     .expect(function(res) {
