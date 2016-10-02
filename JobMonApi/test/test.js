@@ -5,6 +5,7 @@ var testAgents = require('./agentTests.js');
 var testJobs = require('./jobTests.js');
 var testInstalls = require('./installTests.js');
 var testInstances = require('./instanceTests.js');
+var testMessages = require('./messageTests.js');
 var fs = require('fs');
 var path = require('path');
 var rimraf = require('rimraf');
@@ -53,4 +54,5 @@ describe('Running tests', function () {
     testJobs(http);
     testInstalls(http);
     testInstances(http);
+    testMessages(http);
 });

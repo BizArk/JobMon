@@ -58,6 +58,7 @@ function jobRoutes(jmdb) {
     }
 
     function deleteJob(req, res) {
+        
         var job = req.data;
         var destPath = path.resolve(global.appRoot, cfg.downloadPath, 'jobs', job._id + '.zip');
         fs.unlink(destPath, function (err) {
@@ -65,6 +66,7 @@ function jobRoutes(jmdb) {
                 return done(err);
             job.remove(routingUtil.saveResponse(res, 204));
         });
+
     }
 
     function getJob(req, res) {
@@ -72,11 +74,8 @@ function jobRoutes(jmdb) {
     }
 
     function getJobs(req, res) {
-        jmdb.Job.find(function (err, jobs) {
-            if (err) {
-                err = routingUtil.toStandardErr(err);
-                res.status(400).json(err);
-            } else {
+
+        routingUtil.queryData(req, jmdb.Job, function (jobs) {
                 var returnedJobs = [];
                 jobs.forEach(function (job) {
                     var retJob = job.toJSON();
@@ -89,8 +88,8 @@ function jobRoutes(jmdb) {
                     returnedJobs.push(retJob);
                 });
                 res.status(200).json(returnedJobs);
-            }
         });
+
     }
 
     function patchJob(req, res) {

@@ -20,6 +20,36 @@ module.exports = (function () {
         }
     }
 
+    function queryData(req, model, fn) {
+
+        var qstr = req.query.q;
+        var query = null;
+        if (qstr) {
+            query = JSON.parse(qstr);
+        }
+
+        if (query) {
+            model.find(query, function(err, data) {
+                queryDataResults(err, data, fn);
+            });
+        } else {
+            model.find(function(err, data) {
+                queryDataResults(err, data, fn);
+            });
+        }
+
+    }
+
+    function queryDataResults(err, data, fn) {
+        if (err) {
+            err = routingUtil.toStandardErr(err);
+            return res.status(400).json(err);
+        }
+
+        var retData = fn(data);        
+
+    }
+
     function saveResponse(res, successStatus, successReturn) {
         function saveCallback(err) {
             if (err) {
@@ -50,7 +80,7 @@ module.exports = (function () {
         if (err.message) {
             // From Mongoose or MongoDB. The original format is correct, 
             // then they serialize it to an invalid format.  
-            if(err.toJSON) {
+            if (err.toJSON) {
                 return {
                     message: err.message,
                     name: 'MongoDB',
@@ -76,6 +106,7 @@ module.exports = (function () {
 
     return {
         findDocByID: findDocByID,
+        queryData: queryData,
         saveResponse: saveResponse,
         toStandardErr: toStandardErr
     }

@@ -39,20 +39,16 @@ function installRoutes(jmdb) {
     }
 
     function getInstalls(req, res) {
-        jmdb.Install.find(function (err, installs) {
-            if (err)
-                res.status(500).send(err);
-            else {
-                var returnedInstalls = [];
-                installs.forEach(function (install) {
-                    var retInstall = install.toJSON();
-                    retInstall.links = {
-                        self: `http://${req.headers.host}/api/installs/${retInstall._id}`
-                    };
-                    returnedInstalls.push(retInstall);
-                });
-                res.status(200).json(returnedInstalls);
-            }
+        routingUtil.queryData(req, jmdb.Install, function (installs) {
+            var returnedInstalls = [];
+            installs.forEach(function (install) {
+                var retInstall = install.toJSON();
+                retInstall.links = {
+                    self: `http://${req.headers.host}/api/installs/${retInstall._id}`
+                };
+                returnedInstalls.push(retInstall);
+            });
+            res.status(200).json(returnedInstalls);
         });
     }
 

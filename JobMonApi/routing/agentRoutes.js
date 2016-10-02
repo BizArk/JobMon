@@ -13,20 +13,16 @@ function agentRoutes(jmdb) {
     }
 
     function getAgents(req, res) {
-        jmdb.Agent.find(function (err, agents) {
-            if (err)
-                res.status(500).send(err);
-            else {
-                var returnedAgents = [];
-                agents.forEach(function (agent) {
-                    var retAgent = agent.toJSON();
-                    retAgent.links = {
-                        self: `http://${req.headers.host}/api/agents/${retAgent._id}`
-                    };
-                    returnedAgents.push(retAgent);
-                });
-                res.status(200).json(returnedAgents);
-            }
+        routingUtil.queryData(req, jmdb.Agent, function (agents) {
+            var returnedAgents = [];
+            agents.forEach(function (agent) {
+                var retAgent = agent.toJSON();
+                retAgent.links = {
+                    self: `http://${req.headers.host}/api/agents/${retAgent._id}`
+                };
+                returnedAgents.push(retAgent);
+            });
+            res.status(200).json(returnedAgents);
         });
     }
 

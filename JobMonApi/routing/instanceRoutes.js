@@ -80,9 +80,8 @@ function instanceRoutes(jmdb) {
     }
 
     function getInstances(req, res) {
-        jmdb.Instance.find(function (err, instances) {
-            if (err)
-                return res.status(500).send(err);
+
+        routingUtil.queryData(req, jmdb.Instance, function handleResults(instances) {
 
             var returnedInstances = [];
             instances.forEach(function (instance) {
@@ -94,6 +93,7 @@ function instanceRoutes(jmdb) {
             });
             res.status(200).json(returnedInstances);
         });
+
     }
 
     function getMessages(req, res) {

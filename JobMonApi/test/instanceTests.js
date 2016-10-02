@@ -99,7 +99,7 @@ function testInstances(http) {
                     .end(done);
             });
 
-            it('can be started', function(done) {
+            it('can be started', function (done) {
                 http.put(`/api/instances/${lastInstance._id}/start`)
                     .expect(200)
                     .end(done);
@@ -115,7 +115,7 @@ function testInstances(http) {
                         agent: agent._id
                     })
                     .expect(400)
-                    .expect(function(res) {
+                    .expect(function (res) {
                         debug(res.body.message);
                         assert.ok(res.body.name == 'MaxInstancesExceeded')
                     })
@@ -123,7 +123,7 @@ function testInstances(http) {
 
             });
 
-            it('can be completed', function(done) {
+            it('can be completed', function (done) {
                 http.put(`/api/instances/${lastInstance._id}/complete`)
                     .expect(200)
                     .end(done);
@@ -148,7 +148,7 @@ function testInstances(http) {
 
             });
 
-            it('can disable job', function(done) {
+            it('can disable job', function (done) {
                 http.patch(`/api/jobs/${testJob2._id}`)
                     .send({
                         status: 'Disabled'
@@ -162,7 +162,7 @@ function testInstances(http) {
                     .end(done);
             });
 
-            it('cannot start instance for disabled job', function(done) {
+            it('cannot start instance for disabled job', function (done) {
                 var agent = agents[0];
 
                 http.post('/api/instances')
@@ -171,14 +171,14 @@ function testInstances(http) {
                         agent: agent._id
                     })
                     .expect(400)
-                    .expect(function(res) {
+                    .expect(function (res) {
                         debug(res.body.message);
                         assert.ok(res.body.name == 'JobDisabled')
                     })
                     .end(done);
             });
 
-            it('cannot log messages from unstarted instance.', function(done) {
+            it('cannot log messages from unstarted instance.', function (done) {
 
                 http.post(`/api/instances/${lastInstance._id}/logs`)
                     .send({
@@ -186,7 +186,7 @@ function testInstances(http) {
                         message: 'This is a test info message'
                     })
                     .expect(400)
-                    .expect(function(res) {
+                    .expect(function (res) {
                         debug(res.body.message);
                         assert.ok(res.body.name == 'InstanceNotStarted')
                     })
@@ -194,20 +194,20 @@ function testInstances(http) {
 
             });
 
-            it('can be started', function(done) {
+            it('can be started', function (done) {
                 http.put(`/api/instances/${lastInstance._id}/start`)
                     .expect(200)
                     .end(done);
             });
 
-            it('cannot log messages without a log level.', function(done) {
+            it('cannot log messages without a log level.', function (done) {
 
                 http.post(`/api/instances/${lastInstance._id}/logs`)
                     .send({
                         message: 'This is a test info message'
                     })
                     .expect(400)
-                    .expect(function(res) {
+                    .expect(function (res) {
                         debug(res.body.message);
                         assert.ok(res.body.name == 'InvalidLogLevel')
                     })
@@ -215,7 +215,7 @@ function testInstances(http) {
 
             });
 
-            it('cannot log messages with an invalid log level.', function(done) {
+            it('cannot log messages with an invalid log level.', function (done) {
 
                 http.post(`/api/instances/${lastInstance._id}/logs`)
                     .send({
@@ -223,7 +223,7 @@ function testInstances(http) {
                         message: 'This is a test info message'
                     })
                     .expect(400)
-                    .expect(function(res) {
+                    .expect(function (res) {
                         debug(res.body.message);
                         assert.ok(res.body.name == 'InvalidLogLevel')
                     })
@@ -231,7 +231,7 @@ function testInstances(http) {
 
             });
 
-            it('do not log if under minimum logging level for job.', function(done) {
+            it('do not log if under minimum logging level for job.', function (done) {
 
                 http.post(`/api/instances/${lastInstance._id}/logs`)
                     .send({
@@ -239,14 +239,14 @@ function testInstances(http) {
                         message: 'This is a test info message'
                     })
                     .expect(200)
-                    .expect(function(res) {
+                    .expect(function (res) {
                         debug(res.body.message);
                     })
                     .end(done);
 
             });
 
-            it('log a message.', function(done) {
+            it('log a message.', function (done) {
 
                 http.post(`/api/instances/${lastInstance._id}/logs`)
                     .send({
@@ -254,14 +254,14 @@ function testInstances(http) {
                         message: 'This is a test info message'
                     })
                     .expect(201)
-                    .expect(function(res) {
+                    .expect(function (res) {
                         debug(res.body.message);
                     })
                     .end(done);
 
             });
 
-            it('log an error.', function(done) {
+            it('log an error.', function (done) {
 
                 http.post(`/api/instances/${lastInstance._id}/logs`)
                     .send({
@@ -271,19 +271,55 @@ function testInstances(http) {
                         source: '123'
                     })
                     .expect(201)
-                    .expect(function(res) {
+                    .expect(function (res) {
                         debug(res.body.message);
                     })
                     .end(done);
 
             });
 
-            it('get the log messages.', function(done) {
+            it('get the log messages.', function (done) {
 
                 http.get(`/api/instances/${lastInstance._id}/logs`)
                     .expect(200)
-                    .expect(function(res) {
+                    .expect(function (res) {
+                        // debug(res.body);
+                    })
+                    .end(done);
+
+            });
+
+            it('the job has the right number of errors.', function (done) {
+
+                http.get(`/api/jobs`)
+                    .expect(200)
+                    .expect(function (res) {
                         debug(res.body);
+                    })
+                    .end(done);
+
+            });
+
+            it('only returns running instances', function (done) {
+
+                var query = {
+                    started: { $ne: null },
+                    completed: { $eq: null }
+                };
+                var qstr = JSON.stringify(query);
+                debug(qstr);
+
+                http.get('/api/instances')
+                    .query({ q: qstr })
+                    .expect(200)
+                    .expect(function (res) {
+                        var instances = res.body;
+                        assert.ok(instances.length);
+                        for (var i = 0; i < instances.length; i++) {
+                            var inst = instances[i];
+                            assert.ok(inst.started);
+                            assert.ok(!inst.completed);
+                        }
                     })
                     .end(done);
 
