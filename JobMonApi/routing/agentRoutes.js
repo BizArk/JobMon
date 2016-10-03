@@ -13,7 +13,8 @@ function agentRoutes(jmdb) {
     }
 
     function getAgents(req, res) {
-        routingUtil.queryData(req, jmdb.Agent, function (agents) {
+        routingUtil.queryData(req, jmdb.Agent, function (response) {
+            var agents = response.data;
             var returnedAgents = [];
             agents.forEach(function (agent) {
                 var retAgent = agent.toJSON();
@@ -22,7 +23,8 @@ function agentRoutes(jmdb) {
                 };
                 returnedAgents.push(retAgent);
             });
-            res.status(200).json(returnedAgents);
+            response.data = returnedAgents
+            res.status(200).json(response);
         });
     }
 

@@ -58,7 +58,7 @@ function jobRoutes(jmdb) {
     }
 
     function deleteJob(req, res) {
-        
+
         var job = req.data;
         var destPath = path.resolve(global.appRoot, cfg.downloadPath, 'jobs', job._id + '.zip');
         fs.unlink(destPath, function (err) {
@@ -75,19 +75,21 @@ function jobRoutes(jmdb) {
 
     function getJobs(req, res) {
 
-        routingUtil.queryData(req, jmdb.Job, function (jobs) {
-                var returnedJobs = [];
-                jobs.forEach(function (job) {
-                    var retJob = job.toJSON();
-                    retJob.links = {
-                        self: `http://${req.headers.host}/api/jobs/${retJob._id}`
-                    };
-                    if (retJob.fileHash) {
-                        retJob.links.download = `http://${req.headers.host}/downloads/jobs/${retJob._id}.zip`;
-                    }
-                    returnedJobs.push(retJob);
-                });
-                res.status(200).json(returnedJobs);
+        routingUtil.queryData(req, jmdb.Job, function (response) {
+            var jobs = response.data;
+            var returnedJobs = [];
+            jobs.forEach(function (job) {
+                var retJob = job.toJSON();
+                retJob.links = {
+                    self: `http://${req.headers.host}/api/jobs/${retJob._id}`
+                };
+                if (retJob.fileHash) {
+                    retJob.links.download = `http://${req.headers.host}/downloads/jobs/${retJob._id}.zip`;
+                }
+                returnedJobs.push(retJob);
+            });
+            response.data = returnedJobs;
+            res.status(200).json(response);
         });
 
     }

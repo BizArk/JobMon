@@ -23,7 +23,7 @@ function testJobs(http) {
                     .get('/api/jobs')
                     .expect(200)
                     .expect(function (res) {
-                        var jobs = res.body;
+                        var jobs = res.body.data;
                         assert.equal(0, jobs.length);
                     })
                     .end(done);
@@ -129,7 +129,7 @@ function testJobs(http) {
                     .get('/api/jobs')
                     .expect(200)
                     .expect(function (res) {
-                        jobs = res.body;
+                        jobs = res.body.data;
                         assert.equal(3, jobs.length);
                     })
                     .end(done);

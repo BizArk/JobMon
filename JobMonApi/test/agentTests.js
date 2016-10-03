@@ -8,7 +8,7 @@ function testJobs(http) {
                     .get('/api/agents')
                     .expect(200)
                     .expect(function (res) {
-                        var agents = res.body;
+                        var agents = res.body.data;
                         assert.equal(0, agents.length);
                     })
                     .end(done);
@@ -84,7 +84,7 @@ function testJobs(http) {
                     .get('/api/agents')
                     .expect(200)
                     .expect(function (res) {
-                        var agents = res.body;
+                        var agents = res.body.data;
                         assert.equal(2, agents.length);
                     })
                     .end(done);

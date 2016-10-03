@@ -14,7 +14,7 @@ function testInstalls(http) {
                     .get('/api/installs')
                     .expect(200)
                     .expect(function (res) {
-                        var installs = res.body;
+                        var installs = res.body.data;
                         assert.equal(0, installs.length);
                     })
                     .end(done);
@@ -60,8 +60,8 @@ function testInstalls(http) {
                         return;
                     }
 
-                    jobs = results[0];
-                    agents = results[1];
+                    jobs = results[0].data;
+                    agents = results[1].data;
 
                     var job = jobs[0];
                     var agent = agents[0];
@@ -155,7 +155,7 @@ function testInstalls(http) {
                         .get('/api/installs')
                         .expect(200)
                         .expect(function (res) {
-                            jobs = res.body;
+                            jobs = res.body.data;
                             assert.equal(2, jobs.length);
                         })
                         .end(done);

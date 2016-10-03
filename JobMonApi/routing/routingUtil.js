@@ -1,4 +1,5 @@
 var debug = require('debug')('jobmon.route.util')
+var url = require('url');
 
 module.exports = (function () {
     function findDocByID(model, paramName, missingMsg) {
@@ -20,33 +21,80 @@ module.exports = (function () {
         }
     }
 
-    function queryData(req, model, fn) {
+    function queryData(req, model, fn, sanitize) {
 
         var qstr = req.query.q;
-        var query = null;
+        var select = req.query.select;
+        var criteria = null;
+        var sort = req.query.sort;
+        var page = Number(req.query.page || 1);
+        var pageSize = Math.min(Number(req.query.pageSize || 50), 1000);
+        var query;
+        var countQuery;
+
         if (qstr) {
-            query = JSON.parse(qstr);
+            criteria = JSON.parse(qstr);
         }
 
-        if (query) {
-            model.find(query, function(err, data) {
-                queryDataResults(err, data, fn);
-            });
+        // Allow the criteria to be sanitized before querying.
+        if (sanitize)
+            criteria = sanitize(criteria);
+
+        if (criteria) {
+            query = model.find(criteria);
+            countQuery = model.find(criteria);
         } else {
-            model.find(function(err, data) {
-                queryDataResults(err, data, fn);
-            });
+            query = model.find();
+            countQuery = model.find();
         }
 
-    }
+        if (select)
+            query.select(select);
+        if (sort)
+            query.sort(sort);
 
-    function queryDataResults(err, data, fn) {
-        if (err) {
-            err = routingUtil.toStandardErr(err);
-            return res.status(400).json(err);
-        }
+        countQuery.count().exec(function (err, count) {
 
-        var retData = fn(data);        
+            query
+                .limit(pageSize)
+                .skip((page - 1) * pageSize)
+                .exec(function (err, data) {
+                    if (err) {
+                        err = toStandardErr(err);
+                        return res.status(400).json(err);
+                    }
+
+                    var url = getUrl(req);
+                    var prev = null;
+                    var prevQs = Object.assign({}, req.query);
+                    var next = null;
+                    var nextQs = Object.assign({}, req.query);
+
+                    if (page > 1) {
+                        prevQs.page = page - 1;
+                        prev = getUrl(req, prevQs);
+                    }
+
+                    if ((((page - 1) * pageSize) + pageSize) < count) {
+                        nextQs.page = page + 1;
+                        next = getUrl(req, nextQs);
+                    }
+
+                    var response = {
+                        data: data,
+                        page: page,
+                        pageSize: pageSize,
+                        total: count,
+                        links: {
+                            prev: prev,
+                            next: next
+                        }
+                    };
+
+                    fn(response);
+                });
+
+        });
 
     }
 
@@ -62,6 +110,28 @@ module.exports = (function () {
         }
 
         return saveCallback;
+    }
+
+    function getUrl(req, qs) {
+        var host = req.headers.host;
+        var idx = host.indexOf(':');
+        var port = 80;
+        var path = req.originalUrl;
+
+        if (idx > 0)
+            port = host.substr(idx + 1);
+
+        idx = path.indexOf('?');
+        if (idx > 0)
+            path = path.substr(0, idx);
+
+        return url.format({
+            protocol: req.protocol,
+            hostname: req.hostname,
+            pathname: path,
+            port: port,
+            query: qs
+        });
     }
 
     function toStandardErr(err) {

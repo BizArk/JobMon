@@ -18,8 +18,8 @@ function testInstances(http) {
                 function (fn) { http.get('/api/agents').expect(200).end(function (err, res) { fn(null, res.body); }); },
             ], function (err, results) {
                 if (results) {
-                    jobs = results[0];
-                    agents = results[1];
+                    jobs = results[0].data;
+                    agents = results[1].data;
                     testJob1 = jobs.find(j => j.name == 'TestJob01');
                     testJob2 = jobs.find(j => j.name == 'TestJob02');
                 }
@@ -33,7 +33,7 @@ function testInstances(http) {
                     .get('/api/instances')
                     .expect(200)
                     .expect(function (res) {
-                        var instances = res.body;
+                        var instances = res.body.data;
                         assert.equal(0, instances.length);
                     })
                     .end(done);
@@ -116,7 +116,7 @@ function testInstances(http) {
                     })
                     .expect(400)
                     .expect(function (res) {
-                        debug(res.body.message);
+                        //debug(res.body.message);
                         assert.ok(res.body.name == 'MaxInstancesExceeded')
                     })
                     .end(done);
@@ -172,7 +172,7 @@ function testInstances(http) {
                     })
                     .expect(400)
                     .expect(function (res) {
-                        debug(res.body.message);
+                        //debug(res.body.message);
                         assert.ok(res.body.name == 'JobDisabled')
                     })
                     .end(done);
@@ -187,7 +187,7 @@ function testInstances(http) {
                     })
                     .expect(400)
                     .expect(function (res) {
-                        debug(res.body.message);
+                        //debug(res.body.message);
                         assert.ok(res.body.name == 'InstanceNotStarted')
                     })
                     .end(done);
@@ -208,7 +208,7 @@ function testInstances(http) {
                     })
                     .expect(400)
                     .expect(function (res) {
-                        debug(res.body.message);
+                        //debug(res.body.message);
                         assert.ok(res.body.name == 'InvalidLogLevel')
                     })
                     .end(done);
@@ -224,7 +224,7 @@ function testInstances(http) {
                     })
                     .expect(400)
                     .expect(function (res) {
-                        debug(res.body.message);
+                        //debug(res.body.message);
                         assert.ok(res.body.name == 'InvalidLogLevel')
                     })
                     .end(done);
@@ -240,7 +240,7 @@ function testInstances(http) {
                     })
                     .expect(200)
                     .expect(function (res) {
-                        debug(res.body.message);
+                        //debug(res.body.message);
                     })
                     .end(done);
 
@@ -255,7 +255,7 @@ function testInstances(http) {
                     })
                     .expect(201)
                     .expect(function (res) {
-                        debug(res.body.message);
+                        //debug(res.body.message);
                     })
                     .end(done);
 
@@ -272,7 +272,7 @@ function testInstances(http) {
                     })
                     .expect(201)
                     .expect(function (res) {
-                        debug(res.body.message);
+                        //debug(res.body.message);
                     })
                     .end(done);
 
@@ -291,7 +291,7 @@ function testInstances(http) {
 
             it('the job has the right number of errors.', function (done) {
 
-                http.get(`/api/jobs`)
+                http.get('/api/jobs')
                     .expect(200)
                     .expect(function (res) {
                         debug(res.body);
@@ -307,13 +307,12 @@ function testInstances(http) {
                     completed: { $eq: null }
                 };
                 var qstr = JSON.stringify(query);
-                debug(qstr);
 
                 http.get('/api/instances')
                     .query({ q: qstr })
                     .expect(200)
                     .expect(function (res) {
-                        var instances = res.body;
+                        var instances = res.body.data;
                         assert.ok(instances.length);
                         for (var i = 0; i < instances.length; i++) {
                             var inst = instances[i];

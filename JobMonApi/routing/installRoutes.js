@@ -39,7 +39,8 @@ function installRoutes(jmdb) {
     }
 
     function getInstalls(req, res) {
-        routingUtil.queryData(req, jmdb.Install, function (installs) {
+        routingUtil.queryData(req, jmdb.Install, function (response) {
+            var installs = response.data;
             var returnedInstalls = [];
             installs.forEach(function (install) {
                 var retInstall = install.toJSON();
@@ -48,7 +49,8 @@ function installRoutes(jmdb) {
                 };
                 returnedInstalls.push(retInstall);
             });
-            res.status(200).json(returnedInstalls);
+            response.data = returnedInstalls;
+            res.status(200).json(response);
         });
     }
 
