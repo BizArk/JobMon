@@ -70,7 +70,11 @@ function jobRoutes(jmdb) {
     }
 
     function getJob(req, res) {
-        return res.status(200).json(req.data);
+        var retJob = req.data.toJSON();
+        retJob.links = {
+            download: `http://${req.headers.host}/downloads/jobs/${retJob._id}.zip`
+        };
+        return res.status(200).json(retJob);
     }
 
     function getJobs(req, res) {
@@ -152,10 +156,12 @@ function jobRoutes(jmdb) {
 
             job.displayName = jobCfg.displayName || jobCfg.name;
             job.description = jobCfg.description;
-            job.minLogLevel = jobCfg.minLogLevel || 'Info';
-            job.maxInstances = jobCfg.maxInstances || 1;
-            job.maxInstancesToKeep = jobCfg.maxInstancesToKeep || 100;
+            job.status = jobCfg.status || job.status || 'Enabled';
+            job.minLogLevel = jobCfg.minLogLevel || job.minLogLevel || 'Info';
+            job.maxInstances = jobCfg.maxInstances || job.maxInstances || 1;
+            job.maxInstancesToKeep = jobCfg.maxInstancesToKeep || job.maxInstancesToKeep || 100;
             job.maxTimeToCompleteInMinutes = jobCfg.maxTimeToCompleteInMinutes;
+            job.autoComplete = jobCfg.autoComplete;
             debug(job);
 
             var destPath = path.resolve(global.appRoot, cfg.downloadPath, 'jobs', job._id + '.zip');
