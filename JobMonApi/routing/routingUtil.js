@@ -15,7 +15,10 @@ module.exports = (function () {
                         next();
                     } else {
                         //debug('Doc not found');
-                        res.status(404).send(missingMsg || 'Unable to find document.');
+                        res.status(404).send({ 
+                            message: missingMsg || 'Unable to find document.',
+                            name: 'NotFound'
+                        });
                     }
                 });
         }

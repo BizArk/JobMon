@@ -28,49 +28,12 @@ function agentRoutes(jmdb) {
         });
     }
 
-    function installJob(req, res) {
-        var agent = req.data;
-        var jobID = req.body.jobID;
-
-        if (!jobID) {
-            res.status(400).json({
-                name: 'MissingParameter',
-                message: 'jobID is required.'
-            });
-            return;
-        }
-
-        for (job in agent.jobs) {
-            if (job._id === jobID) {
-                // The job is already installed, don't need to do anything.
-                res.status(200).send();
-                return;
-            }
-        }
-
-        jmdb.Job.findById(jobID, function (err, job) {
-            if (err) {
-                err = toStandardErr(err);
-                res.status(400).json(err);
-                return;
-            }
-
-            jmdb.Agent.findByIdAndUpdate(
-                { _id: agent._id },
-                { $push: { jobs: { jobID: job._id, fileHash: job.fileHash } } },
-                { safe: true, upsert: true },
-                routingUtil.saveResponse(res, 201)
-            );
-
-        });
-
-    }
-
     function patchAgent(req, res) {
         var agent = req.data;
         for (var key in req.body) {
             switch (key) {
                 case 'enabled':
+                case 'hostDetails':
                     // These are the only fields we allow to be updated in the agent.
                     agent[key] = req.body[key];
                     break;
@@ -122,9 +85,6 @@ function agentRoutes(jmdb) {
         .delete(deleteAgent)
         .get(getAgent)
         .patch(patchAgent);
-
-    router.route('/:agentID/jobs')
-        .post(installJob);
 
     return router;
 }

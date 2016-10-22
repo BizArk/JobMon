@@ -205,8 +205,8 @@ function jobRoutes(jmdb) {
 
     router.route('/:jobID')
         .delete(deleteJob)
-        .patch(patchJob)
-        .get(getJob);
+        .get(getJob)
+        .patch(patchJob);
 
     return router;
 }

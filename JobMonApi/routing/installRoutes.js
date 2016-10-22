@@ -58,26 +58,12 @@ function installRoutes(jmdb) {
         var install = req.data;
         for (var key in req.body) {
             switch (key) {
-                case '_id':
-                    // Ignore.
-                    break;
-                default:
+                case 'fileHash': // These are the only fields that can be changed.
+                case 'uninstall':
                     install[key] = req.body[key];
                     break;
             }
         }
-        install.save(routingUtil.saveResponse(res, 200, install));
-    }
-
-    function updateInstall(req, res) {
-        var install = req.data;
-        install.displayName = req.body.displayName;
-        install.description = req.body.description;
-        install.status = req.body.status;
-        install.configuration = req.body.configuration;
-        install.minLogLevel = req.body.minLogLevel;
-        install.installPath = req.body.installPath;
-        install.version = req.body.version;
         install.save(routingUtil.saveResponse(res, 200, install));
     }
 
@@ -92,8 +78,7 @@ function installRoutes(jmdb) {
     router.route('/:installID')
         .delete(deleteInstall)
         .get(getInstall)
-        .patch(patchInstall)
-        .put(updateInstall);
+        .patch(patchInstall);
 
     return router;
 }
