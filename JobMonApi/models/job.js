@@ -14,10 +14,12 @@ var jobSchema = new Schema({
     description: String,
     status: {
         type: String,
+        required: true,
         enum: ['Enabled', 'Disabled', 'Error']
     },
     minLogLevel: { // Only log messages that are at this level and to the right of it (see enum)
         type: String,
+        required: true,
         enum: ['Trace', 'Debug', 'Info', 'Warn', 'Error', 'Fatal']
     },
     maxInstances: { // The maximum number of instances that can be running at a time.
