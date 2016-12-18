@@ -62,7 +62,7 @@ function agentRoutes(jmdb) {
                 existingAgent.host = req.body.host;
                 existingAgent.hostDetails = req.body.hostDetails;
                 existingAgent.url = req.body.url;
-                existingAgent.save(routingUtil.saveResponse(res, 200, agent));
+                existingAgent.save(routingUtil.saveResponse(res, 200, existingAgent));
             } else {
                 // These should always be true.
                 agent.host_lower = host_lower;

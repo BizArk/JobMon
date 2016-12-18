@@ -13,7 +13,7 @@ var agentSchema = new Schema({
         unique: true
     },
     hostDetails: String, // The details of a host, can include OS, memory, CPU, etc.
-    url: {
+    url: { // The root URL needed to start a job, get information about an agent, etc.
         type: String,
         required: true,
         unique: true

@@ -6,6 +6,7 @@ var mkdirp = require('mkdirp');
 var multer = require('multer');
 var debug = require('debug')('jobmon.route.job')
 var AdmZip = require('adm-zip');
+var request = require('superagent');
 
 var cfg = require('../config.js');
 var routingUtil = require('./routingUtil.js');
@@ -184,6 +185,49 @@ function jobRoutes(jmdb) {
 
     }
 
+    function startJob(req, res) {
+        var job = req.data;
+
+        jmdb.Install.find({ job: job._id })
+            .populate('agent')
+            .exec(function(err, installs) {
+                if (err) {
+                    debug(err);
+                    err = routingUtil.toStandardErr(err);
+                    return res.status(400).json(err);
+                }
+
+                if(installs.length == 0) {
+                    debug('Job ' + job.displayName + ' is not installed on any agents.');
+                    return res.status(400).json({
+                        message: job.displayName + ' is not installed on any agents.',
+                        name: 'NotInstalled'
+                    });
+                }
+
+                // We want to randomly select an agent to run this job on.
+                // If that agent isn't available, keep going until we find one.
+                var startidx = Math.floor(Math.random() * installs.length);
+                for(var i = 0; i < installs.length; i++) {
+                    var idx = (startidx+i) % installs.length;
+                    var install = installs[idx];
+                    var agent = install.agent;
+                    if(agent.enabled) {
+                        //todo: call the agent to start the instance.
+                        return res.status(200).json(agent);
+                    }
+                }
+
+                // If we get to here then that means we didn't find any agents that are available.
+                debug('Job ' + job.displayName + ' is not installed on any available agents.');
+                return res.status(400).json({
+                    message: job.displayName + ' is not installed on any available agents.',
+                    name: 'AgentNotAvailable'
+                });
+                
+            });
+    }
+
     var router = express.Router();
 
     var parseUploads = multer({
@@ -207,6 +251,9 @@ function jobRoutes(jmdb) {
         .delete(deleteJob)
         .get(getJob)
         .patch(patchJob);
+
+    router.route('/:jobID/start')
+        .post(startJob);
 
     return router;
 }

@@ -16,6 +16,8 @@ function testJobs(http) {
         });
 
         describe('register agent', function () {
+            var agent01;
+
             it('without required information', function (done) {
                 http
                     .post('/api/agents')
@@ -38,8 +40,8 @@ function testJobs(http) {
                     })
                     .expect(201)
                     .expect(function (res) {
-                        var agent = res.body;
-                        assert.ok(agent._id);
+                        agent01 = res.body;
+                        assert.ok(agent01._id);
                     })
                     .end(done);
             });
@@ -56,6 +58,7 @@ function testJobs(http) {
                     .expect(function (res) {
                         var agent = res.body;
                         assert.ok(agent._id);
+                        assert.equal(agent._id, agent01._id);
                     })
                     .end(done);
             });

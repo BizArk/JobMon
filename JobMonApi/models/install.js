@@ -17,8 +17,8 @@ var installSchema = new Schema({
     fileHash: String, // The hash of the installed job file.
     uninstall: Boolean // If true, this install is marked for uninstallation. This record will be deleted once the agent uninstalls it. 
 }, {
-        collection: 'installs'
-    });
+    collection: 'installs'
+});
 
 installSchema.index({ job: 1, agent: 1 }, { unique: true });
 installSchema.plugin(idvalidator);

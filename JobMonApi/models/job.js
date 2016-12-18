@@ -38,7 +38,7 @@ var jobSchema = new Schema({
     fileHash: String, // A hash of the file so we can know if it is the one that is installed or not. 
     fileLastUpdated: Date // The last time the file was uploaded.
 }, {
-        collection: 'jobs'
-    });
+    collection: 'jobs'
+});
 
 module.exports = mongoose.model('job', jobSchema);

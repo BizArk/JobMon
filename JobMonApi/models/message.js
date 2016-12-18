@@ -31,8 +31,8 @@ var messageSchema = new Schema({
     details: String, // An optional detailed description of the error. As an example, for .Net this might include the type of exception, exception message, and stack trace.
     source: String // An optional value that can be used to help identify the source of an error. It's suggested to use a numeric value and each call to log a message would have a unique value.
 }, {
-        collection: 'messages'
-    });
+    collection: 'messages'
+});
 
 messageSchema.index({ instance: 1 });
 messageSchema.index({ job: 1 });
