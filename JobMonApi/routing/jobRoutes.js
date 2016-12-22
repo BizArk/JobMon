@@ -7,6 +7,7 @@ var multer = require('multer');
 var debug = require('debug')('jobmon.route.job')
 var AdmZip = require('adm-zip');
 var request = require('superagent');
+var async = require('async');
 
 var cfg = require('../config.js');
 var routingUtil = require('./routingUtil.js');
@@ -208,22 +209,66 @@ function jobRoutes(jmdb) {
                 // We want to randomly select an agent to run this job on.
                 // If that agent isn't available, keep going until we find one.
                 var startidx = Math.floor(Math.random() * installs.length);
-                for(var i = 0; i < installs.length; i++) {
-                    var idx = (startidx+i) % installs.length;
-                    var install = installs[idx];
-                    var agent = install.agent;
-                    if(agent.enabled) {
-                        //todo: call the agent to start the instance.
-                        return res.status(200).json(agent);
-                    }
-                }
+                var i = 0;
+                async.whilst(
+                    function() {
+                        // We check inside the next method to make sure we don't overflow the agents.
+                        return true;
+                    },
+                    function(callback) {
+                        // Make sure we don't overflow the agents.
+                        if(i >= installs.length)
+                            return callback({ name:'AgentNotAvailable', message: 'Unable to find an agent to run ' + job.displayName });
 
-                // If we get to here then that means we didn't find any agents that are available.
-                debug('Job ' + job.displayName + ' is not installed on any available agents.');
-                return res.status(400).json({
-                    message: job.displayName + ' is not installed on any available agents.',
-                    name: 'AgentNotAvailable'
-                });
+                        // Determine the index of the agent to check.
+                        var idx = (startidx+i) % installs.length;
+                        var install = installs[idx];
+                        var agent = install.agent;
+                        i++; // Increment in case this isn't the one.
+                        if(!agent.enabled) // The agent is disabled, so don't run the instance on it.
+                            return callback(null, null);
+
+                        var instance = new jmdb.Instance();
+                        instance.job = job._id;
+                        instance.agent = agent._id;
+                        instance.status = 'Starting';
+                        instance.save(function saveInstance(err) {
+                            if (err) {
+                                return callback(err);
+                            } else {
+                                request
+                                    .post(agent.url + '/instances/' + instance._id + '/start')
+                                    .send(instance)
+                                    .set('Accept', 'application/json')
+                                    .end(function(err, startRes) {
+                                        if(!err) 
+                                            return callback(null, instance);
+
+                                        // Something wrong with the agent. 
+                                        // Delete the instance.
+                                        debug('Unable to start ' + job.displayName + ' on ' + agent.host + '. Removing the instance.');
+                                        instance.remove();
+
+                                        if(err.code == 'ENOTFOUND') {
+                                            debug('Could not reach ' + agent.host + '. Try the next agent.');
+                                            //todo: Should we mark the agent as not accessible?
+                                            return callback(null, null);
+                                        } else {
+                                            return callback(err, null);
+                                        }
+
+                                    });
+                            }
+                        });
+                    },
+                    function(err, instance) {
+                        if(err) {
+                            return res.status(400).json(routingUtil.toStandardErr(err));
+                        } else {
+                            return res.status(200).json(instance);
+                        }
+                    }
+                )
                 
             });
     }
