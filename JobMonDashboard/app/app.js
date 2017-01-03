@@ -4,20 +4,23 @@
 app.controller('jobsController', ['$scope', '$http', '$interval',
     function JobsController($scope, $http, $interval) {
 
-        getJobs();
+        var jobs;
+        var instances;
+
         //update once a minute.
         var intervalPromise =  $interval(getJobs, 60 * 1000);
+
+        getJobs();
 
         function getJobs() {
 
             $http.get('/api/jobs/').then(function success(response) {
-
-                for (var i = 0; i < response.data.length; i++) {
+                $scope.jobList = jobs = response.data.data;
+                for (var i = 0; i < jobs.length; i++) {
 
                     //temp stub until we get the instances.
-                    response.data[i].instanceCount = 0;
+                    jobs[i].instanceCount = 0;
                 }
-                $scope.jobList = response.data;
 
                 getInstances().then(countInstances);
             },
@@ -46,7 +49,7 @@ app.controller('jobsController', ['$scope', '$http', '$interval',
         }
         function getInstances() {
            return $http.get('/api/instances/').then(function success(response) {
-               $scope.jobInstances = response.data;
+               $scope.jobInstances = instances = response.data.data;
                return response.data;
             },
             function error(response) {

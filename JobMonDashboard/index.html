@@ -64,7 +64,7 @@
     <div ng-controller="jobsController">
         <div ng-repeat="job in jobList" class="jobCard">
             <div class="jobCount">({{job.instanceCount}})</div>
-            <div class="jobTitle">{{ job.displayName}}</div>
+            <div class="jobTitle">{{job.displayName}}</div>
             <div class="jobStatus" ng-class="job.status">{{ job.status}}</div>
             <div class="jobDescription">{{ job.description}}</div>
 
