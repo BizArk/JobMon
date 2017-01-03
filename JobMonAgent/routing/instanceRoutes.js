@@ -6,8 +6,8 @@ function instanceRoutes(jmdb) {
 
     function startInstance(req, res) {
         var instance = req.data;
-        instance.started = Date.now();
-        instance.save(routingUtil.saveResponse(res, 200, instance));
+
+        res.status(200).json(instance);
     }
 
     var router = express.Router();
