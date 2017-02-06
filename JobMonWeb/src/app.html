@@ -1,5 +1,27 @@
 <template>
-  <require from="bootstrap/css/bootstrap.css"></require>
-  <h1>${message}</h1>
+	<require from="bootstrap/css/bootstrap.css"></require>
+	<require from="app.css"></require>
 
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">BizArk JobMon</a>
+			</div>
+			<ul class="nav navbar-nav">
+				<li repeat.for="item of router.navigation" class="${item.isActive ? 'active' : ''}">
+					<a href.bind="item.href"><i class="fa fa-${item.settings.icon}"></i> ${item.title}</a>
+				</li>
+			</ul>
+			<a href="#/dashboard" class="navbar-status-${status}">
+				<span>STATUS</span>
+				<i class="fa fa-check-circle-o" if.bind="status == 'ok'"></i>
+				<i class="fa fa-exclamation-triangle" if.bind="status == 'warn'"></i>
+				<i class="fa fa-exclamation-circle" if.bind="status == 'error'"></i>
+			</a>
+		</div>
+	</nav>
+
+	<div id="divMainBody">
+		<router-view class="container"></router-view>
+	</div>
 </template>

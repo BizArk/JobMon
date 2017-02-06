@@ -1,0 +1,36 @@
+<template>
+	<require from="dashboard/dashboard.css"></require>
+
+	<div class="row summary-tiles">
+		<div class="col-md-2 col-sm-4 col-xs-6 summary-tile summary-errors">
+			<span class="summary-tile-header"><i class="fa fa-exclamation-circle"></i> Errors</span>
+			<div class="count">${summary.errors | number}</div>
+			<span class="summary-tile-footer">last 24 hours</span>
+		</div>
+		<div class="col-md-2 col-sm-4 col-xs-6 summary-tile summary-warnings">
+			<span class="summary-tile-header"><i class="fa fa-exclamation-triangle"></i> Warnings</span>
+			<div class="count">${summary.warnings | number}</div>
+			<span class="summary-tile-footer">last 24 hours</span>
+		</div>
+		<div class="col-md-2 col-sm-4 col-xs-6 summary-tile summary-messages">
+			<span class="summary-tile-header"><i class="fa fa-info"></i> Messages</span>
+			<div class="count">${summary.messages | number}</div>
+			<span class="summary-tile-footer">last 24 hours</span>
+		</div>
+		<div class="col-md-2 col-sm-4 col-xs-6 summary-tile summary-instances">
+			<span class="summary-tile-header"><i class="fa fa-cog"></i> Instances</span>
+			<div class="count">${summary.instances | number}</div>
+			<span class="summary-tile-footer">last 24 hours</span>
+		</div>
+		<div class="col-md-2 col-sm-4 col-xs-6 summary-tile summary-jobs">
+			<span class="summary-tile-header"><i class="fa fa-rocket"></i> Jobs</span>
+			<div class="count">${summary.jobs | number}</div>
+			<span class="summary-tile-footer">total active jobs</span>
+		</div>
+		<div class="col-md-2 col-sm-4 col-xs-6 summary-tile summary-agents">
+			<span class="summary-tile-header"><i class="fa fa-server"></i> Agents</span>
+			<div class="count">${summary.agents | number}</div>
+			<span class="summary-tile-footer">total active agents</span>
+		</div>
+	</div>
+</template>

@@ -1,6 +1,6 @@
 {
   "name": "jobmonweb",
-  "description": "An Aurelia client application.",
+  "description": "JobMon dashboard.",
   "version": "0.1.0",
   "repository": {
     "type": "???",
@@ -12,7 +12,10 @@
     "aurelia-bootstrapper": "^1.0.0",
     "bluebird": "^3.4.1",
     "bootstrap": "^3.3.7",
+    "font-awesome": "^4.7.0",
     "jquery": "^3.1.1",
+    "moment": "^2.17.1",
+    "numeral": "^2.0.4",
     "requirejs": "^2.3.2",
     "text": "github:requirejs/text#latest"
   },
@@ -46,10 +49,6 @@
     "babel-register": "^6.9.0",
     "gulp-babel": "^6.1.2",
     "gulp-eslint": "^2.0.0",
-    "jasmine-core": "^2.4.1",
-    "karma": "^0.13.22",
-    "karma-chrome-launcher": "^1.0.1",
-    "karma-jasmine": "^1.0.2",
-    "karma-babel-preprocessor": "^6.0.1"
+    "gulp-sass": "^2.3.2"
   }
 }

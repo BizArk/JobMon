@@ -1,0 +1,40 @@
+#divMainBody {
+    margin: 0 20px;
+    padding: 0;
+}
+
+.navbar-status {
+    display: block;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    text-decoration: none;
+    &:hover {
+        text-decoration: none;
+    }
+    i {
+        font-size: 40px;
+    }
+}
+
+.navbar-status-ok {
+    @extend .navbar-status;
+    .fa {
+		color: green;
+	}
+}
+
+.navbar-status-warn {
+    @extend .navbar-status;
+    .fa {
+		color: #caca0b;
+	}
+}
+
+.navbar-status-error {
+    @extend .navbar-status;
+    .fa {
+		color: red;
+	}
+}
+

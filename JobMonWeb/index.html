@@ -2,10 +2,40 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>JobMon Dashboard</title>
+    <title>JobMon</title>
+    <link rel="stylesheet" href="/scripts/font-awesome/css/font-awesome.min.css">
+    <style>
+
+      .splash {
+        text-align: center;
+        margin: 10% 0 0 0;
+        box-sizing: border-box;
+      }
+
+      .splash .message {
+        font-size: 72px;
+        line-height: 72px;
+        text-shadow: rgba(0, 0, 0, 0.5) 0 0 15px;
+        text-transform: uppercase;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+
+      .splash .spinner {
+        text-align: center;
+        display: inline-block;
+        font-size: 72px;
+        margin-top: 50px;
+      }
+
+    </style>
   </head>
 
   <body aurelia-app="main">
+    <div class="splash">
+      <div class="message">BizArk<br>JobMon Dashboard</div>
+      <i class="fa fa-spin fa-cog spinner"></i>
+    </div>
+
     <script src="scripts/vendor-bundle.js" data-main="aurelia-bootstrapper"></script>
   </body>
 </html>

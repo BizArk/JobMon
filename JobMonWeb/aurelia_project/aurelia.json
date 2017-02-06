@@ -25,19 +25,18 @@
     "source": "src/**/*.html"
   },
   "cssProcessor": {
-    "id": "none",
-    "displayName": "None",
-    "fileExtension": ".css",
-    "source": "src/**/*.css"
+    "id": "sass",
+    "displayName": "Sass",
+    "fileExtension": ".scss",
+    "source": "src/**/*.scss"
   },
   "editor": {
     "id": "vscode",
     "displayName": "Visual Studio Code"
   },
   "unitTestRunner": {
-    "id": "karma",
-    "displayName": "Karma",
-    "source": "test/unit/**/*.js"
+    "id": "none",
+    "displayName": "None"
   },
   "paths": {
     "root": "src",
@@ -46,10 +45,6 @@
     "attributes": "src/resources/attributes",
     "valueConverters": "src/resources/value-converters",
     "bindingBehaviors": "src/resources/binding-behaviors"
-  },
-  "testFramework": {
-    "id": "jasmine",
-    "displayName": "Jasmine"
   },
   "build": {
     "targets": [
@@ -115,7 +110,8 @@
           "aurelia-task-queue",
           "aurelia-templating",
           "aurelia-templating-binding",
-          "jquery",
+		  "jquery",
+		  "numeral",
           "text",
           {
             "name": "aurelia-templating-resources",
@@ -142,7 +138,12 @@
             "resources": [
               "css/bootstrap.css"
             ]
-          }
+          },
+		  {
+			  "name": "moment",
+			  "path": "../node_modules/moment",
+			  "main": "moment"
+		  }
         ]
       }
     ]
