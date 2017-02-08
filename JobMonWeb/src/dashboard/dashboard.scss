@@ -1,20 +1,21 @@
+#divSummary {
+	background-color: #F7F7F7;
+	margin: 0;
+}
 .summary-tiles {
     .summary-tile {
-        //border-bottom: 1px solid #D9DEE4;
-        padding: 0 10px 0 20px;
         position: relative;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         color: #73879C;
 		text-align: center;
+		margin: 20px;
         &:before {
             content: "";
             position: absolute;
             left: 0;
             height: 65px;
-            //border-left: 2px solid #ADB2B5;
-            margin-top: 10px;
         }
         &:first-child:before {
             border-left: 0;

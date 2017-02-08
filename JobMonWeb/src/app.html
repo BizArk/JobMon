@@ -2,17 +2,24 @@
 	<require from="bootstrap/css/bootstrap.css"></require>
 	<require from="app.css"></require>
 
-	<nav class="navbar navbar-default navbar-static-top">
+	<nav class="navbar navbar-inverse navbar-static-top bg-primary">
 		<div class="container-fluid">
 			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span> 
+				</button>
 				<a class="navbar-brand" href="#">BizArk JobMon</a>
 			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
 			<ul class="nav navbar-nav">
 				<li repeat.for="item of router.navigation" class="${item.isActive ? 'active' : ''}">
 					<a href.bind="item.href"><i class="fa fa-${item.settings.icon}"></i> ${item.title}</a>
 				</li>
 			</ul>
-			<a href="#/dashboard" class="navbar-status-${status}">
+			</div>
+			<a href="#/dashboard" class="navbar-status-${status} hidden-xs">
 				<span>STATUS</span>
 				<i class="fa fa-check-circle-o" if.bind="status == 'ok'"></i>
 				<i class="fa fa-exclamation-triangle" if.bind="status == 'warn'"></i>
@@ -22,6 +29,6 @@
 	</nav>
 
 	<div id="divMainBody">
-		<router-view class="container"></router-view>
+		<router-view></router-view>
 	</div>
 </template>

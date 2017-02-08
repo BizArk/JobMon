@@ -1,20 +1,33 @@
 #divMainBody {
-    margin: 0 20px;
+    margin: 0;
     padding: 0;
+}
+
+.navbar {
+	margin-bottom: 0;
 }
 
 .navbar-status {
     display: block;
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 0px;
+    right: 0px;
+	height: 51px;
     text-decoration: none;
+	background: #F7F7F7;
+	padding: 5px 15px;
     &:hover {
         text-decoration: none;
     }
     i {
         font-size: 40px;
     }
+
+	span {
+		@media screen and (max-width: 835px) {
+			display: none;
+		}
+	}
 }
 
 .navbar-status-ok {

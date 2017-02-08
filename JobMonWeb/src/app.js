@@ -12,7 +12,7 @@ export class App {
 			{ route: 'instances', moduleId: 'instances/instances', nav: true, title: 'Instances', settings: { icon: 'cog' } },
 			{ route: 'agents', moduleId: 'agents/agents', nav: true, title: 'Agents', settings: { icon: 'server' } },
 			{ route: 'settings', moduleId: 'settings/settings', nav: true, title: 'Settings', settings: { icon: 'wrench' } },
-			{ route: 'help', moduleId: 'help/help', nav: true, title: 'Help', settings: { icon: 'help' } }
+			{ route: 'help', moduleId: 'help/help', nav: true, title: 'Help', settings: { icon: 'question' } }
 		]);
 		this.router = router;
 	}
