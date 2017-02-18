@@ -113,6 +113,11 @@
 		  "jquery",
 		  "numeral",
           "text",
+		  {
+			  "name": "zingchart",
+			  "path": "../node_modules/zingchart",
+			  "main": "index"
+		  },
           {
             "name": "aurelia-templating-resources",
             "path": "../node_modules/aurelia-templating-resources/dist/amd",
@@ -143,8 +148,7 @@
 			  "name": "moment",
 			  "path": "../node_modules/moment",
 			  "main": "moment"
-		  },
-		  "zingchart"
+		  }
         ]
       }
     ]
