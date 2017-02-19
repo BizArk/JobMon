@@ -1,18 +1,14 @@
 import numeral from 'numeral';
 import zingchart from 'zingchart';
+import { inject } from 'aurelia-framework';
+import { ApplicationState } from '../ApplicationState';
 
-// This has to be on the window object for ZingChart to call it.
-function _updateErrGauge(cb) {
-	var tick = {};
-	tick.plot0 = parseInt(100 * Math.random(), 10);
-	cb(JSON.stringify(tick));
-}
-window._updateErrGauge = _updateErrGauge;
-
+@inject(ApplicationState)
 export class Dashboard {
 
-	constructor() {
+	constructor(appState) {
 		this.message = 'Welcome to JobMon!';
+		this.appState = appState;
 
 		this.summary = {
 			errors: 5,
@@ -24,9 +20,6 @@ export class Dashboard {
 		};
 
 		this.lastUpdated = new Date();
-
-		this.errGauge = null;
-		this.errChart = null;
 	}
 
 	attached() {
@@ -59,7 +52,7 @@ export class Dashboard {
 				markers: [
 					{
 						type: "line",
-						range: [70],
+						range: [this.appState.cfg.critical],
 						lineColor: "red",
 						lineWidth: 5,
 						lineStyle: "dotted",
@@ -72,7 +65,7 @@ export class Dashboard {
 					},
 					{
 						type: "line",
-						range: [30],
+						range: [this.appState.cfg.caution],
 						lineColor: "yellow",
 						lineWidth: 5,
 						lineStyle: "dotted",
@@ -142,10 +135,14 @@ export class Dashboard {
 				}
 			]
 		};
-		this.errChart = zingchart.render({ // Render Method[3]
+		zingchart.render({ // Render Method[3]
 			id: "divLastWeekErrorChart",
 			data: weekErrChartData,
 			height: 400
+		});
+
+		zingchart.bind('divLastWeekErrorChart', 'node_click', function (e) {
+			console.log(e);
 		});
 	}
 
@@ -165,7 +162,7 @@ export class Dashboard {
 				bold: false
 			},
 			scaleR: {
-				values: "0:100:10",
+				values: `0:${this.appState.cfg.maxErrs}:10`,
 				tick: {
 					lineWidth: 4,
 					size: 15,
@@ -175,7 +172,7 @@ export class Dashboard {
 				markers: [
 					{
 						type: 'area',
-						range: [30, 70],
+						range: [this.appState.cfg.caution, this.appState.cfg.critical],
 						alpha: 1,
 						backgroundColor: '#eded00',
 						borderColor: '#C1C1C1',
@@ -185,7 +182,7 @@ export class Dashboard {
 					},
 					{
 						type: 'area',
-						range: [70, 100],
+						range: [this.appState.cfg.critical, this.appState.cfg.maxErrs],
 						alpha: 1,
 						backgroundColor: '#ff4d4d',
 						borderColor: 'red',
@@ -232,15 +229,9 @@ export class Dashboard {
 			plotarea: {
 				marginBottom: "20%"
 			},
-			refresh: {
-				type: 'feed',
-				transport: 'js',
-				url: '_updateErrGauge()',
-				interval: 2000
-			},
 			series: [
 				{
-					values: [50],
+					values: [0],
 					valueBox: {
 						text: "%v",
 						placement: "center",
@@ -252,11 +243,26 @@ export class Dashboard {
 				}
 			]
 		};
-		this.errGauge = zingchart.render({ // Render Method[3]
+		zingchart.render({ // Render Method[3]
 			id: "divLastHourErrorGauge",
 			data: hourErrGaugeData,
 			height: 400
 		});
+
+		setInterval(() => this._updateErrGauge(), 2000);
+	}
+
+	_updateErrGauge() {
+		var newVal = parseInt(100 * Math.random(), 10);
+		console.log(newVal);
+		newVal = Math.min(newVal, this.appState.cfg.maxErrs);
+		zingchart.exec("divLastHourErrorGauge", "setseriesvalues", {
+			plotindex: 0,
+			values: [newVal]
+		});
+		//var tick = {};
+		//tick.plot0 = 
+		//cb(JSON.stringify(tick));
 	}
 
 }

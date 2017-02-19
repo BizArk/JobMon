@@ -1,41 +1,70 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>JobMon</title>
-    <link rel="stylesheet" href="/scripts/font-awesome/css/font-awesome.min.css">
-    <style>
 
-      .splash {
-        text-align: center;
-        margin: 10% 0 0 0;
-        box-sizing: border-box;
-      }
+<head>
+	<meta charset="utf-8">
+	<title>JobMon</title>
+	<link rel="stylesheet" href="/scripts/font-awesome/css/font-awesome.min.css">
+	<style>
+		html {
+			height: 100%;
+		}
+		
+		body {
+			height: 100%;
+			min-height: 100%;
+			margin: 0;
+		}
+		
+		.body-loading {
+			height: 100%;
+			margin: 0;
+			position: relative;
+			background-repeat: no-repeat;
+			background-attachment: fixed;
+			background: #7db9e8;
+			background: -moz-linear-gradient(top, #000000 0%, #7db9e8 100%);
+			background: -webkit-linear-gradient(top, #000000 0%, #7db9e8 100%);
+			background: linear-gradient(to bottom, #000000 0%, #7db9e8 100%);
+		}
+		
+		.splash {
+			text-align: center;
+			position: absolute;
+			width: 100%;
+			top: 50%;
+			margin-top: -133px;
+			box-sizing: border-box;
+			color: white;
+		}
+		
+		.splash .message {
+			font-size: 72px;
+			line-height: 72px;
+			text-shadow: rgba(0, 0, 0, 0.5) 0 0 15px;
+			text-transform: uppercase;
+			font-family: "Arial Black", Gadget, sans-serif;
+			/*"Helvetica Neue", Helvetica, Arial, sans-serif;*/
+		}
+		
+		.splash .spinner {
+			text-align: center;
+			display: inline-block;
+			font-size: 72px;
+			margin-top: 50px;
+		}
+	</style>
+</head>
 
-      .splash .message {
-        font-size: 72px;
-        line-height: 72px;
-        text-shadow: rgba(0, 0, 0, 0.5) 0 0 15px;
-        text-transform: uppercase;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      }
+<body aurelia-app="main">
+	<div class="body-loading">
+		<div class="splash">
+			<div class="message">BizArk<br>JobMon Dashboard</div>
+			<i class="fa fa-spin fa-cog spinner"></i>
+		</div>
+	</div>
 
-      .splash .spinner {
-        text-align: center;
-        display: inline-block;
-        font-size: 72px;
-        margin-top: 50px;
-      }
+	<script src="scripts/vendor-bundle.js" data-main="aurelia-bootstrapper"></script>
+</body>
 
-    </style>
-  </head>
-
-  <body aurelia-app="main">
-    <div class="splash">
-      <div class="message">BizArk<br>JobMon Dashboard</div>
-      <i class="fa fa-spin fa-cog spinner"></i>
-    </div>
-
-    <script src="scripts/vendor-bundle.js" data-main="aurelia-bootstrapper"></script>
-  </body>
 </html>
