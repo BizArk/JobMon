@@ -1,6 +1,6 @@
 import zingchart from 'zingchart';
 import { inject } from 'aurelia-framework';
-import { ApplicationState } from '../ApplicationState';
+import { ApplicationState } from '../../services/ApplicationState';
 import moment from 'moment';
 
 @inject(ApplicationState)

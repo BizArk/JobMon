@@ -1,9 +1,9 @@
 import { inject, NewInstance } from 'aurelia-framework';
 import { ValidationRules } from 'aurelia-validation';
-import { ApplicationState } from '../ApplicationState';
+import { ApplicationState } from '../../services/ApplicationState';
 import {ValidationController} from 'aurelia-validation';
 import { LogManager } from "aurelia-framework";
-import {BootstrapFormRenderer} from '../bootstrap-form-renderer';
+import {BootstrapFormRenderer} from '../../services/bootstrap-form-renderer';
 import $ from 'bootstrap';
 
 const log = LogManager.getLogger('JobMon.Settings');
