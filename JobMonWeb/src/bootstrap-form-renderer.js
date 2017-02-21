@@ -6,7 +6,7 @@ import {
 import $ from 'jquery';
 import { LogManager } from "aurelia-framework";
 
-const log = LogManager.getLogger('JobMon');
+const log = LogManager.getLogger('JobMon.BootstrapFormRenderer');
 
 export class BootstrapFormRenderer {
 	render(instruction) {

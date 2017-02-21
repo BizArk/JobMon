@@ -2,25 +2,25 @@ import environment from './environment';
 
 //Configure Bluebird Promises.
 Promise.config({
-  longStackTraces: environment.debug,
-  warnings: {
-    wForgottenReturn: false
-  }
+	longStackTraces: environment.debug,
+	warnings: {
+		wForgottenReturn: false
+	}
 });
 
 export function configure(aurelia) {
-  aurelia.use
-    .standardConfiguration()
-    .feature('resources')
-	.plugin('aurelia-validation');
+	aurelia.use
+		.standardConfiguration()
+		.feature('resources')
+		.plugin('aurelia-validation');
 
-  if (environment.debug) {
-    aurelia.use.developmentLogging();
-  }
+	if (environment.debug) {
+		aurelia.use.developmentLogging();
+	}
 
-  if (environment.testing) {
-    aurelia.use.plugin('aurelia-testing');
-  }
+	if (environment.testing) {
+		aurelia.use.plugin('aurelia-testing');
+	}
 
-  aurelia.start().then(() => aurelia.setRoot());
+	aurelia.start().then(() => aurelia.setRoot());
 }
