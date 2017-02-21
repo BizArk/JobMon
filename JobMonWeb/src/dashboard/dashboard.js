@@ -1,13 +1,12 @@
-import numeral from 'numeral';
 import zingchart from 'zingchart';
 import { inject } from 'aurelia-framework';
 import { ApplicationState } from '../ApplicationState';
+import moment from 'moment';
 
 @inject(ApplicationState)
 export class Dashboard {
 
 	constructor(appState) {
-		this.message = 'Welcome to JobMon!';
 		this.appState = appState;
 
 		this.summary = {
@@ -20,6 +19,12 @@ export class Dashboard {
 		};
 
 		this.lastUpdated = new Date();
+		
+		this.errors = null;
+		this.errCriteria = {
+			start: null,
+			end: null
+		};
 	}
 
 	attached() {
@@ -27,11 +32,27 @@ export class Dashboard {
 		this._createErrGauge();
 	}
 
+	detached() {
+		clearInterval(this.errGaugeInterval);
+		zingchart.exec('divLastWeekErrorChart', 'destroy');
+		zingchart.exec('divLastHourErrorGauge', 'destroy');
+	}
+
 	_createErrChart() {
 		var weekErrChartData = {
 			type: "line",  // Specify your chart type here.
+			crosshairX: {
+				plotLabel: {
+					text: '%t: %v',
+					fontColor: '#000000'
+				}
+			},
+			preview: { },
 			plot: {
-				aspect: "spline"
+				aspect: "spline",
+				tooltip: {
+					visible: false
+				}
 			},
 			title: {
 				text: "# of Errors" // Adds a title to your chart
@@ -39,8 +60,11 @@ export class Dashboard {
 			subtitle: {
 				text: 'Last 7 Days'
 			},
-			legend: {}, // Creates an interactive legend
+			legend: {
+				fontColor: '#000000'
+			}, 
 			scaleX: {
+				zooming: true,
 				labels: [
 					'12am', '1am', '2am', '3am', '4am', '5am',
 					'6am', '7am', '8am', '9am', '10am', '11am',
@@ -79,6 +103,7 @@ export class Dashboard {
 			},
 			series: [
 				{
+					value: new Date('2/15/2017'),
 					text: 'Few Days Ago',
 					lineColor: '#e0e0e0',
 					lineStylex: 'dashed',
@@ -93,6 +118,7 @@ export class Dashboard {
 					}
 				},
 				{
+					value: new Date('2/16/2017'),
 					text: 'Day Before',
 					lineColor: '#c0c0c0',
 					lineStylex: 'dashed',
@@ -107,6 +133,7 @@ export class Dashboard {
 					}
 				},
 				{
+					value: new Date('2/17/2017'),
 					text: 'Yesterday',
 					lineColor: '#a0a0a0',
 					lineStylex: 'dashed',
@@ -121,6 +148,7 @@ export class Dashboard {
 					}
 				},
 				{
+					value: new Date('2/18/2017'),
 					text: 'Today',
 					lineColor: '#000000',
 					lineWidth: 5,
@@ -141,8 +169,32 @@ export class Dashboard {
 			height: 400
 		});
 
+		var criteria = this.errCriteria;
+		var errors = this.errors = [];
 		zingchart.bind('divLastWeekErrorChart', 'node_click', function (e) {
+			var series = weekErrChartData.series[e.plotindex];
+			criteria.start = moment(series.value).add(e.scaleval-1, 'hours');
+			criteria.end = moment(series.value).add(e.scaleval, 'hours');
+			errors.splice(0, errors.length);
 			console.log(e);
+			for(var i = 0; i < e.value; i++) {
+				var dt = moment(criteria.start);
+				var seconds = parseInt(3600 * Math.random(), 10);
+				dt = dt.add(seconds, 'seconds');
+				errors.push({
+					created: dt,
+					message: `Message ${i}`,
+					job: {
+						name: 'Job X'
+					}
+				});
+			}
+
+			errors.sort((a, b) => { 
+				if (a.created < b.created) return -1;
+				if (a.created > b.created) return 1;
+				return 0;
+			});
 		});
 	}
 
@@ -249,20 +301,17 @@ export class Dashboard {
 			height: 400
 		});
 
-		setInterval(() => this._updateErrGauge(), 2000);
+		this.errGaugeInterval = setInterval(() => this._updateErrGauge(), 2000);
 	}
 
 	_updateErrGauge() {
 		var newVal = parseInt(100 * Math.random(), 10);
-		console.log(newVal);
 		newVal = Math.min(newVal, this.appState.cfg.maxErrs);
+		console.log(newVal);
 		zingchart.exec("divLastHourErrorGauge", "setseriesvalues", {
 			plotindex: 0,
 			values: [newVal]
 		});
-		//var tick = {};
-		//tick.plot0 = 
-		//cb(JSON.stringify(tick));
 	}
 
 }

@@ -11,8 +11,7 @@ export class App {
 			{ route: 'jobs', moduleId: 'jobs/jobs', nav: true, title: 'Jobs', settings: { icon: 'rocket' } },
 			{ route: 'instances', moduleId: 'instances/instances', nav: true, title: 'Instances', settings: { icon: 'cog' } },
 			{ route: 'agents', moduleId: 'agents/agents', nav: true, title: 'Agents', settings: { icon: 'server' } },
-			{ route: 'settings', moduleId: 'settings/settings', nav: true, title: 'Settings', settings: { icon: 'wrench' } },
-			{ route: 'help', moduleId: 'help/help', nav: true, title: 'Help', settings: { icon: 'question' } }
+			{ route: 'settings', moduleId: 'settings/settings', nav: true, title: 'Settings', settings: { icon: 'wrench' } }
 		]);
 		this.router = router;
 	}

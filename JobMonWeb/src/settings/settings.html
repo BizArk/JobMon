@@ -1,0 +1,32 @@
+<template>
+	<require from="settings/settings.css"></require>
+
+	<div id="divSettings" class="container-fluid">
+		<div class="row settings-errors">
+			<div class="col-md-2">
+				<div class="panel panel-default">
+					<div class="panel-heading">Dashboard  Configuration</div>
+					<form class="panel-body">
+						<div class="form-group has-success has-feedback">
+							<label for="errs-max" class="control-label">Error Gauge Max</label>
+							<input type="number" class="form-control" id="errs-max" value.bind="dashboard.errsMax">
+							<i class="fa fa-check form-control-feedback"></i>
+						</div>
+						<div class="form-group has-error has-feedback">
+							<label for="errs-critical" class="control-label">Critical Threshold</label>
+							<input type="text" class="form-control" id="errs-critical">
+							<i class="fa fa-exclamation-circle form-control-feedback"></i>
+							<small class="help-block">This value is not valid</small>
+						</div>
+						<div class="form-group has-warning has-feedback">
+							<label for="errs-caution" class="control-label">Caution Threshold</label>
+							<input type="text" class="form-control" id="errs-caution">
+							<i class="fa fa-exclamation-triangle form-control-feedback"></i>
+						</div>
+						<button type="submit" class="btn btn-default">Submit</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>

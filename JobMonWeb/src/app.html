@@ -17,6 +17,9 @@
 				<li repeat.for="item of router.navigation" class="${item.isActive ? 'active' : ''}">
 					<a href.bind="item.href"><i class="fa fa-${item.settings.icon}"></i> ${item.title}</a>
 				</li>
+				<li>
+					<a href="https://github.com/BizArk/JobMon/wiki/JobMon-Dashboard" target="help"><i class="fa fa-question"></i> Help</a>
+				</li>
 			</ul>
 			</div>
 			<a href="#/dashboard" class="navbar-status-${status} hidden-xs">
