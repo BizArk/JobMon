@@ -1,6 +1,11 @@
+import closest from 'polyfills/closest';
+ 
 export class App {
 	constructor() {
 		this.status = 'ok';
+
+		// enable the polyfill.
+		closest();
 	}
 
 	configureRouter(config, router) {
