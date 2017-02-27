@@ -1,0 +1,14 @@
+<template>
+	<table class="table">
+		<tr>
+			<th>Date/Time</th>
+			<th>Message</th>
+			<th>Job</th>
+		</tr>
+		<tr repeat.for="msg of messages">
+			<td>${msg.created | jmDate:'MMM Do h:mm a'}</td>
+			<td>${msg.message}</td>
+			<td>${msg.job.name}</td>
+		</tr>
+	</table>
+</template>

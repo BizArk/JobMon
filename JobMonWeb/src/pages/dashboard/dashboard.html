@@ -69,18 +69,7 @@
 		<div class="row error-grid" if.bind="errors.data !== null && !errors.loading">
 			<div class="col-md-9">
 				<h3>${errors.data.length | jmNumber} errors between ${errors.criteria.start | jmDate:'ha'} and ${errors.criteria.end | jmDate:'ha'} on ${errors.criteria.start | jmDate:'MMM Do'}</h3>
-				<table class="table">
-					<tr>
-						<th>Date/Time</th>
-						<th>Message</th>
-						<th>Job</th>
-					</tr>
-					<tr repeat.for="err of errors.data">
-						<td>${err.created | jmDate:'MMM Do h:mm a'}</td>
-						<td>${err.message}</td>
-						<td>${err.job.name}</td>
-					</tr>
-				</table>
+				<jm-message-grid messages.bind="errors.data"></jm-message-grid>
 			</div>
 		</div>
 	</div>
