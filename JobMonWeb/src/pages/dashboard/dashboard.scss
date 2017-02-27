@@ -1,7 +1,8 @@
 #divSummary {
-	background-color: #F7F7F7;
-	margin: 0;
+    background-color: #F7F7F7;
+    margin: 0;
 }
+
 .summary-tiles {
     .summary-tile {
         position: relative;
@@ -9,8 +10,8 @@
         overflow: hidden;
         text-overflow: ellipsis;
         color: #73879C;
-		text-align: center;
-		margin: 20px;
+        text-align: center;
+        margin: 20px;
         &:before {
             content: "";
             position: absolute;
@@ -37,5 +38,12 @@
                 color: #caca0b;
             }
         }
+    }
+}
+
+.error-loading {
+    h3 {
+        text-align: center;
+        margin-top: 20px;
     }
 }

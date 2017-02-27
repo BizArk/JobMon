@@ -1,3 +1,3 @@
 export function configure(config) {
-	config.globalResources('./value-converters/number', './value-converters/date', './value-converters/nulltoemptystring' );
+	config.globalResources('./value-converters/jm-number', './value-converters/jm-date', './value-converters/jm-nulltoemptystring' );
 }

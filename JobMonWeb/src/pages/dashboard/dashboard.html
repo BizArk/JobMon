@@ -6,42 +6,42 @@
 			<div class="col-md-2 col-sm-4 col-xs-6">
 				<div class="summary-tile summary-errors">
 					<span class="summary-tile-header"><i class="fa fa-exclamation-circle"></i> Errors</span>
-					<div class="count">${summary.errors | number}</div>
+					<div class="count">${summary.errors | jmNumber}</div>
 					<span class="summary-tile-footer">last 24 hours</span>
 				</div>
 			</div>
 			<div class="col-md-2 col-sm-4 col-xs-6">
 				<div class="summary-tile summary-warnings">
 					<span class="summary-tile-header"><i class="fa fa-exclamation-triangle"></i> Warnings</span>
-					<div class="count">${summary.warnings | number}</div>
+					<div class="count">${summary.warnings | jmNumber}</div>
 					<span class="summary-tile-footer">last 24 hours</span>
 				</div>
 			</div>
 			<div class="col-md-2 col-sm-4 col-xs-6">
 				<div class="summary-tile summary-messages">
 					<span class="summary-tile-header"><i class="fa fa-info"></i> Messages</span>
-					<div class="count">${summary.messages | number}</div>
+					<div class="count">${summary.messages | jmNumber}</div>
 					<span class="summary-tile-footer">last 24 hours</span>
 				</div>
 			</div>
 			<div class="col-md-2 col-sm-4 col-xs-6">
 				<div class="summary-tile summary-instances">
 					<span class="summary-tile-header"><i class="fa fa-cog"></i> Instances</span>
-					<div class="count">${summary.instances | number}</div>
+					<div class="count">${summary.instances | jmNumber}</div>
 					<span class="summary-tile-footer">last 24 hours</span>
 				</div>
 			</div>
 			<div class="col-md-2 col-sm-4 col-xs-6">
 				<div class="summary-tile summary-jobs">
 					<span class="summary-tile-header"><i class="fa fa-rocket"></i> Jobs</span>
-					<div class="count">${summary.jobs | number}</div>
+					<div class="count">${summary.jobs | jmNumber}</div>
 					<span class="summary-tile-footer">total active jobs</span>
 				</div>
 			</div>
 			<div class="col-md-2 col-sm-4 col-xs-6">
 				<div class="summary-tile summary-agents">
 					<span class="summary-tile-header"><i class="fa fa-server"></i> Agents</span>
-					<div class="count">${summary.agents | number}</div>
+					<div class="count">${summary.agents | jmNumber}</div>
 					<span class="summary-tile-footer">total active agents</span>
 				</div>
 			</div>
@@ -58,17 +58,25 @@
 			</div>
 		</div>
 
-		<div class="row error-grid">
+		<div class="row error-grid" if.bind="errors.data === null && !errors.loading">
+			<h3>Select a point in the error chart above to view errors.</h3>
+		</div>
+
+		<div class="row error-grid error-loading" if.bind="errors.loading">
+			<h3><i class="fa fa-spin fa-cog"></i> Loading</h3>
+		</div>
+
+		<div class="row error-grid" if.bind="errors.data !== null && !errors.loading">
 			<div class="col-md-9">
-				<h3>${errors.length | number} errors between ${errCriteria.start | date:'ha'} and ${errCriteria.end | date:'ha'} on ${errCriteria.start | date:'MMM Do'}</h3>
+				<h3>${errors.data.length | jmNumber} errors between ${errors.criteria.start | jmDate:'ha'} and ${errors.criteria.end | jmDate:'ha'} on ${errors.criteria.start | jmDate:'MMM Do'}</h3>
 				<table class="table">
 					<tr>
 						<th>Date/Time</th>
 						<th>Message</th>
 						<th>Job</th>
 					</tr>
-					<tr repeat.for="err of errors">
-						<td>${err.created | date:'MMM Do h:mm a'}</td>
+					<tr repeat.for="err of errors.data">
+						<td>${err.created | jmDate:'MMM Do h:mm a'}</td>
 						<td>${err.message}</td>
 						<td>${err.job.name}</td>
 					</tr>

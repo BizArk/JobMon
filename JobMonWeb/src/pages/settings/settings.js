@@ -38,7 +38,8 @@ export class Settings {
 		log.debug('_validateMaxErrs', val, obj);
 		if(val === null) return true;
 		if(val === undefined) return true;
-		return false;
+		
+		return !(val % 10);
 	}
 
 	save() {

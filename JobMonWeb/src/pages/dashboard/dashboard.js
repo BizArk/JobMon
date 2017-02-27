@@ -19,11 +19,14 @@ export class Dashboard {
 		};
 
 		this.lastUpdated = new Date();
-		
-		this.errors = null;
-		this.errCriteria = {
-			start: null,
-			end: null
+
+		this.errors = {
+			data: null,
+			criteria: {
+				start: null,
+				end: null
+			},
+			loading: false
 		};
 	}
 
@@ -47,7 +50,7 @@ export class Dashboard {
 					fontColor: '#000000'
 				}
 			},
-			preview: { },
+			preview: {},
 			plot: {
 				aspect: "spline",
 				tooltip: {
@@ -62,7 +65,7 @@ export class Dashboard {
 			},
 			legend: {
 				fontColor: '#000000'
-			}, 
+			},
 			scaleX: {
 				zooming: true,
 				labels: [
@@ -169,33 +172,45 @@ export class Dashboard {
 			height: 400
 		});
 
-		var criteria = this.errCriteria;
-		var errors = this.errors = [];
+		// Setup a closure so it can be used in the event handler.
+		var errors = this.errors;
+		var _errChart_Node_Click = this._errChart_Node_Click;
 		zingchart.bind('divLastWeekErrorChart', 'node_click', function (e) {
-			var series = weekErrChartData.series[e.plotindex];
-			criteria.start = moment(series.value).add(e.scaleval-1, 'hours');
-			criteria.end = moment(series.value).add(e.scaleval, 'hours');
-			errors.splice(0, errors.length);
-			console.log(e);
-			for(var i = 0; i < e.value; i++) {
+			_errChart_Node_Click(e, errors, weekErrChartData);
+		});
+	}
+
+	_errChart_Node_Click(e, errors, weekErrChartData) {
+		var series = weekErrChartData.series[e.plotindex];
+		var criteria = errors.criteria;
+
+		errors.loading = true;
+
+		criteria.start = moment(series.value).add(e.scaleval - 1, 'hours');
+		criteria.end = moment(series.value).add(e.scaleval, 'hours');
+
+		setTimeout(function () {
+			errors.data = [];
+			for (var i = 0; i < e.value; i++) {
 				var dt = moment(criteria.start);
 				var seconds = parseInt(3600 * Math.random(), 10);
 				dt = dt.add(seconds, 'seconds');
-				errors.push({
+				errors.data.push({
 					created: dt,
 					message: `Message ${i}`,
 					job: {
 						name: 'Job X'
 					}
 				});
+				errors.loading = false;
 			}
 
-			errors.sort((a, b) => { 
+			errors.data.sort((a, b) => {
 				if (a.created < b.created) return -1;
 				if (a.created > b.created) return 1;
 				return 0;
 			});
-		});
+		}, 2000);
 	}
 
 	_createErrGauge() {
