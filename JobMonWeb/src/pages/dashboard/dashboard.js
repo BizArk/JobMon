@@ -189,29 +189,27 @@ export class Dashboard {
 		criteria.start = moment(series.value).add(e.scaleval - 1, 'hours');
 		criteria.end = moment(series.value).add(e.scaleval, 'hours');
 
-		setTimeout(function () {
-			errors.data = [];
-			for (var i = 0; i < e.value; i++) {
-				var dt = moment(criteria.start);
-				var seconds = parseInt(3600 * Math.random(), 10);
-				dt = dt.add(seconds, 'seconds');
-				errors.data.push({
-					logLevel: 'Error',
-					created: dt,
-					message: `Message ${i}`,
-					job: {
-						name: 'Job X'
-					}
-				});
-				errors.loading = false;
-			}
-
-			errors.data.sort((a, b) => {
-				if (a.created < b.created) return -1;
-				if (a.created > b.created) return 1;
-				return 0;
+		errors.data = [];
+		for (var i = 0; i < e.value; i++) {
+			var dt = moment(criteria.start);
+			var seconds = parseInt(3600 * Math.random(), 10);
+			dt = dt.add(seconds, 'seconds');
+			errors.data.push({
+				logLevel: 'Error',
+				created: dt,
+				message: `Message ${i}`,
+				job: {
+					name: 'Job X'
+				}
 			});
-		}, 2000);
+			errors.loading = false;
+		}
+
+		errors.data.sort((a, b) => {
+			if (a.created < b.created) return -1;
+			if (a.created > b.created) return 1;
+			return 0;
+		});
 	}
 
 	_createErrGauge() {

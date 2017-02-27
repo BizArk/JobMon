@@ -12,6 +12,8 @@ export function configure(aurelia) {
 	aurelia.use
 		.standardConfiguration()
 		.feature('resources')
+		.globalResources('bootstrap/css/bootstrap.css')
+		.plugin('aurelia-dialog')
 		.plugin('aurelia-validation');
 
 	if (environment.debug) {

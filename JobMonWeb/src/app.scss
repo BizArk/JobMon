@@ -7,6 +7,10 @@
 	margin-bottom: 0;
 }
 
+.navbar-static-top {
+	z-index: 999; // needs to be less than the the dialog overlay
+}
+
 .navbar-status {
     display: block;
     position: absolute;
@@ -51,3 +55,7 @@
 	}
 }
 
+ai-dialog-overlay.active {
+  background-color: black;
+  opacity: .5;
+}
