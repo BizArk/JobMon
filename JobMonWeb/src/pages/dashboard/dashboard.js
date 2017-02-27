@@ -196,6 +196,7 @@ export class Dashboard {
 				var seconds = parseInt(3600 * Math.random(), 10);
 				dt = dt.add(seconds, 'seconds');
 				errors.data.push({
+					logLevel: 'Error',
 					created: dt,
 					message: `Message ${i}`,
 					job: {
