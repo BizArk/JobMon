@@ -51,10 +51,10 @@
 	<div id="divCharts" class="container-fluid">
 		<div class="row summary-charts">
 			<div class="col-md-9">
-				<div id="divLastWeekErrorChart"></div>
+				<compose view-model="./errchart" change.delegate="updateErrorGrid($event)"></compose>
 			</div>
 			<div class="col-md-3">
-				<div id="divLastHourErrorGauge"></div>
+				<compose view-model="./errgauge"></compose>
 			</div>
 		</div>
 
@@ -62,7 +62,7 @@
 			<h3>Select a point in the error chart above to view errors.</h3>
 		</div>
 
-		<div class="row error-grid error-loading" if.bind="errors.loading">
+		<div class="row error-grid error-grid-loading" if.bind="errors.loading">
 			<h3><i class="fa fa-spin fa-cog"></i> Loading</h3>
 		</div>
 

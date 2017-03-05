@@ -7,6 +7,9 @@
 			<th>Job</th>
 			<th>Details</th>
 		</tr>
+		<tr if.bind="messages.length == 0">
+			<td colspan="99" class="no-data">There are no messages to display.</td>
+		</tr>
 		<tr repeat.for="msg of messages">
 			<td>${msg.logLevel}</td>
 			<td>${msg.created | jmDate:'MMM Do h:mm a'}</td>

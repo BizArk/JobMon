@@ -6,18 +6,18 @@
 			<div class="col-md-2">
 				<div class="panel panel-default">
 					<div class="panel-heading">Dashboard  Configuration</div>
-					<form class="panel-body" submit.delegate | NullToEmptyString="save()">
+					<form class="panel-body" submit.delegate="save()">
 						<div class="form-group">
 							<label for="errs-max" class="control-label">Error Gauge Max</label>
-							<input type="number" class="form-control" id="errs-max" value.bind="dashboard.errsMax | nullToEmptyString & validate">
+							<input type="number" class="form-control" id="errs-max" value.bind="dashboard.errsMax | jmNullToEmptyString & validate">
 						</div>
 						<div class="form-group">
 							<label for="errs-critical" class="control-label">Critical Threshold</label>
-							<input type="text" class="form-control" id="errs-critical & validate" value.bind="dashboard.errsCritical | nullToEmptyString & validate">
+							<input type="text" class="form-control" id="errs-critical & validate" value.bind="dashboard.errsCritical | jmNullToEmptyString & validate">
 						</div>
 						<div class="form-group">
 							<label for="errs-caution" class="control-label">Caution Threshold</label>
-							<input type="text" class="form-control" id="errs-caution & validate" value.bind="dashboard.errsCaution | nullToEmptyString & validate">
+							<input type="text" class="form-control" id="errs-caution & validate" value.bind="dashboard.errsCaution | jmNullToEmptyString & validate">
 						</div>
 						<button type="submit" class="btn btn-default">Submit</button>
 					</form>
