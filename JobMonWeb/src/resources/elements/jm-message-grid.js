@@ -1,27 +1,27 @@
 import { bindable, inject } from 'aurelia-framework';
 import { DialogService } from 'aurelia-dialog';
-import { ConfirmDialog } from 'dialogs/confirm/confirm';
+import { MessageDetailsDialog } from 'dialogs/message-details/message-details';
+import { JobMonUtil } from '../../services/JobMonUtil';
 
-@inject(DialogService)
+@inject(DialogService, JobMonUtil)
 export class JmMessageGridCustomElement {
 	@bindable messages;
 
-	constructor(dlg) {
+	constructor(dlg, jmutil) {
 		this.dlg = dlg;
+		this.jmutil = jmutil;
 	}
 
 	valueChanged(newValue, oldValue) {
 
 	}
 
-	showDetails() {
+	showDetails(msg) {
 		this.dlg.open({
-			viewModel: ConfirmDialog,
-			model: 'Dis es de detal'
-		}).then(result => {
-			if(result.wasCancelled) return;
-			alert('hello');
+			viewModel: MessageDetailsDialog,
+			model: msg
 		});
 	}
+
 }
 

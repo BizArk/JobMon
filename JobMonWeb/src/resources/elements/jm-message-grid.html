@@ -1,5 +1,5 @@
 <template>
-	<table class="table">
+	<table class="table table-highlight">
 		<tr>
 			<th>Level</th>
 			<th>Date/Time</th>
@@ -11,11 +11,11 @@
 			<td colspan="99" class="no-data">There are no messages to display.</td>
 		</tr>
 		<tr repeat.for="msg of messages">
-			<td>${msg.logLevel}</td>
+			<td><jm-loglevel-icon value.bind="msg.logLevel"></jm-loglevel-icon> ${msg.logLevel}</td>
 			<td>${msg.created | jmDate:'MMM Do h:mm a'}</td>
 			<td>${msg.message}</td>
 			<td>${msg.job.name}</td>
-			<td><button click.trigger="showDetails()" class="btn btn-default"><i class="fa fa-ellipsis-h"></i></button></td>
+			<td><button click.trigger="showDetails(msg)" class="btn btn-default"><i class="fa fa-ellipsis-h"></i></button></td>
 		</tr>
 	</table>
 </template>

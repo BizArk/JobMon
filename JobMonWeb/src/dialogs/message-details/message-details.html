@@ -1,0 +1,40 @@
+﻿<template>
+	<div tabindex="-1" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" click.trigger="dlgCtrl.cancel()" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"><jm-loglevel-icon value.bind="msg.logLevel"></jm-loglevel-icon> ${msg.logLevel} Message Details</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-details">
+						<tr>
+							<th>Message</th>
+							<td>${msg.message}</td>
+						</tr>
+						<tr>
+							<th>Created</th>
+							<td>${msg.created | jmDate:'MMM Do h:mm a'}</td>
+						</tr>
+						<tr>
+							<th>Level</th>
+							<td><jm-loglevel-icon value.bind="msg.logLevel"></jm-loglevel-icon> ${msg.logLevel}</td>
+						</tr>
+						<tr>
+							<th class="right">Job</th>
+							<td>${msg.job.name}</td>
+						</tr>
+						<tr>
+							<th>Source</th>
+							<td>${msg.source}</td>
+						</tr>
+					</table>
+					<pre class="message-details-ex">${msg.details}</pre>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" click.trigger="dlgCtrl.cancel()">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>

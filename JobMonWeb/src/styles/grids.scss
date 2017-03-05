@@ -1,0 +1,30 @@
+﻿.table-details {
+	border: 1px solid #ddd;
+
+	tr:nth-of-type(odd) {
+		background-color: #f9f9f9;
+	}
+
+	th, td {
+		border: 1px solid #ddd;
+	}
+
+	th {
+		text-align: right;
+		white-space: nowrap;
+		width: 1px;
+		padding-left: 20px!important;
+
+		&::after {
+			content: ":";
+		}
+	}
+}
+
+.table-highlight {
+	tr:hover {
+		td, th {
+			background-color: #fcf8e3;
+		}
+	}
+}

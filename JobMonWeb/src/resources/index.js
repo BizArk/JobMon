@@ -3,5 +3,6 @@ export function configure(config) {
 		'./value-converters/jm-number', 
 		'./value-converters/jm-date', 
 		'./value-converters/jm-nulltoemptystring',
-		'./elements/jm-message-grid');
+		'./elements/jm-message-grid',
+		'./elements/jm-loglevel-icon');
 }

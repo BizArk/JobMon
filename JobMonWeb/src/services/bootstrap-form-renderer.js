@@ -8,6 +8,9 @@ import { LogManager } from "aurelia-framework";
 
 const log = LogManager.getLogger('JobMon.BootstrapFormRenderer');
 
+/**
+ * This class handles showing validation errors using Bootstrap styles.
+ */
 export class BootstrapFormRenderer {
 	render(instruction) {
 		for (let { result, elements } of instruction.unrender) {
